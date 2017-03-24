@@ -1,0 +1,17 @@
+In file included from /home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/PickUpController.h:15:1: error: qualifiers can only be specified for objects and functions
+ };
+ ^
+make[2]: *** [CMakeFiles/mobility.dir/src/PickUpController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+In file included from /home/steven/rover_workspace/src/mobility/src/mobility.cpp:22:0:
+/home/steven/rover_workspace/src/mobility/src/PickUpController.h:15:1: error: qualifiers can only be specified for objects and functions
+ };
+ ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void doPickupControllerMovements()’:
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:377:24: error: passing ‘volatile PickUpResult’ as ‘this’ argument of ‘PickUpResult& PickUpResult::operator=(const PickUpResult&)’ discards qualifiers [-fpermissive]
+                 result = pickUpController.pickUpSelectedTarget(blockBlock);
+                        ^
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

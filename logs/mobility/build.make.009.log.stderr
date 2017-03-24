@@ -1,0 +1,18 @@
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void mobilityStateMachine(const ros::TimerEvent&)’:
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:260:58: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+ stevenMsg.data = strcat("the state is ",stateMachineState);
+                                                          ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:260:58: error: invalid conversion from ‘int’ to ‘const char*’ [-fpermissive]
+In file included from /usr/include/c++/4.8/cstring:42:0,
+                 from /usr/include/boost/math/special_functions/detail/fp_traits.hpp:23,
+                 from /usr/include/boost/math/special_functions/fpclassify.hpp:20,
+                 from /usr/include/boost/math/special_functions/round.hpp:15,
+                 from /opt/ros/indigo/include/ros/time.h:58,
+                 from /opt/ros/indigo/include/ros/ros.h:38,
+                 from /home/steven/rover_workspace/src/mobility/src/mobility.cpp:1:
+/usr/include/string.h:137:14: error:   initializing argument 2 of ‘char* strcat(char*, const char*)’ [-fpermissive]
+ extern char *strcat (char *__restrict __dest, const char *__restrict __src)
+              ^
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,31 @@
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘int main(int, char**)’:
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:214:70: error: ‘joyCmdHandler’ was not declared in this scope
+     joySubscriber = mNH.subscribe((publishedName + "/joystick"), 10, joyCmdHandler);
+                                                                      ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:215:66: error: ‘modeHandler’ was not declared in this scope
+     modeSubscriber = mNH.subscribe((publishedName + "/mode"), 1, modeHandler);
+                                                                  ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:216:72: error: ‘targetHandler’ was not declared in this scope
+     targetSubscriber = mNH.subscribe((publishedName + "/targets"), 10, targetHandler);
+                                                                        ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:217:75: error: ‘obstacleHandler’ was not declared in this scope
+     obstacleSubscriber = mNH.subscribe((publishedName + "/obstacle"), 10, obstacleHandler);
+                                                                           ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:218:80: error: ‘odometryHandler’ was not declared in this scope
+     odometrySubscriber = mNH.subscribe((publishedName + "/odom/filtered"), 10, odometryHandler);
+                                                                                ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:220:71: error: ‘mapHandler’ was not declared in this scope
+ mapSubscriber = mNH.subscribe((publishedName + "/odom/filtered"), 10, mapHandler);
+                                                                       ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:230:84: error: ‘publishStatusTimerEventHandler’ was not declared in this scope
+     publish_status_timer = mNH.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
+                                                                                    ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:231:78: error: ‘mobilityStateMachine’ was not declared in this scope
+     stateMachineTimer = mNH.createTimer(ros::Duration(mobilityLoopTimeStep), mobilityStateMachine);
+                                                                              ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:232:61: error: ‘targetDetectedReset’ was not declared in this scope
+     targetDetectedTimer = mNH.createTimer(ros::Duration(0), targetDetectedReset, true);
+                                                             ^
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

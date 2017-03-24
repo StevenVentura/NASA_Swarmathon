@@ -1,0 +1,24 @@
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: In member function ‘void DropOffController::setupPrint()’:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:15:11: error: ‘argc’ was not declared in this scope
+ ros::init(argc, argv, "nothing", ros::init_options::NoSigintHandler);
+           ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:15:17: error: ‘argv’ was not declared in this scope
+ ros::init(argc, argv, "nothing", ros::init_options::NoSigintHandler);
+                 ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: At global scope:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:20:31: error: variable or field ‘print’ declared void
+ void DropOffController::print(string str)
+                               ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:20:31: error: ‘string’ was not declared in this scope
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:20:31: note: suggested alternative:
+In file included from /usr/include/c++/4.8/string:39:0,
+                 from /opt/ros/indigo/include/geometry_msgs/Pose2D.h:9,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.h:5,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:
+/usr/include/c++/4.8/bits/stringfwd.h:62:33: note:   ‘std::string’
+   typedef basic_string<char>    string;   
+                                 ^
+make[2]: *** [CMakeFiles/mobility.dir/src/DropOffController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,8 @@
+prefix=/home/steven/rover_workspace/install
+
+Name: ublox_serialization
+Description: Description of ublox_serialization
+Version: 0.0.0
+Cflags: -I/home/steven/rover_workspace/install/include
+Libs: -L/home/steven/rover_workspace/install/lib 
+Requires: roscpp roscpp_serialization

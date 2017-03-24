@@ -1,0 +1,18 @@
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void print(std::string)’:
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:699:9: error: expected type-specifier
+ }catch (std::Exception &e)
+         ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:699:24: error: expected unqualified-id before ‘&’ token
+ }catch (std::Exception &e)
+                        ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:699:24: error: expected ‘)’ before ‘&’ token
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:699:24: error: expected ‘{’ before ‘&’ token
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:699:25: error: ‘e’ was not declared in this scope
+ }catch (std::Exception &e)
+                         ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:699:26: error: expected ‘;’ before ‘)’ token
+ }catch (std::Exception &e)
+                          ^
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

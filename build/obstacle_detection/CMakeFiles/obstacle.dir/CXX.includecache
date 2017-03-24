@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/steven/rover_workspace/src/obstacle_detection/src/obstacle.cpp
+ros/ros.h
+-
+message_filters/subscriber.h
+-
+message_filters/synchronizer.h
+-
+message_filters/sync_policies/approximate_time.h
+-
+std_msgs/UInt8.h
+-
+sensor_msgs/Range.h
+-
+

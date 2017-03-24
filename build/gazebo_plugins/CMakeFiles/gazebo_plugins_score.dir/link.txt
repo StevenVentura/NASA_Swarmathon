@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -std=c++0x   -shared -Wl,-soname,libgazebo_plugins_score.so -o /home/steven/rover_workspace/devel/lib/libgazebo_plugins_score.so CMakeFiles/gazebo_plugins_score.dir/src/ScorePlugin/ScorePlugin.cpp.o  -L/usr/lib/x86_64-linux-gnu/gazebo-2.2/plugins 

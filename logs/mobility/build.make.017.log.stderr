@@ -1,0 +1,31 @@
+In file included from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h:26:25: error: ‘ros::Publisher’ has not been declared
+ void givePublisher(ros::Publisher pub) {infoLogPublisher = pub;}
+                         ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h:42:1: error: ‘Publisher’ in namespace ‘ros’ does not name a type
+ ros::Publisher infoLogPublisher;
+ ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h: In member function ‘void DropOffController::givePublisher(int)’:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h:26:41: error: ‘infoLogPublisher’ was not declared in this scope
+ void givePublisher(ros::Publisher pub) {infoLogPublisher = pub;}
+                                         ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: At global scope:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:38:31: error: variable or field ‘print’ declared void
+ void DropOffController::print(string str)
+                               ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:38:31: error: ‘string’ was not declared in this scope
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:38:31: note: suggested alternative:
+In file included from /usr/include/c++/4.8/string:39:0,
+                 from /opt/ros/indigo/include/geometry_msgs/Pose2D.h:9,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.h:5,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:
+/usr/include/c++/4.8/bits/stringfwd.h:62:33: note:   ‘std::string’
+   typedef basic_string<char>    string;   
+                                 ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: In member function ‘void DropOffController::calculateDecision()’:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:104:17: error: ‘print’ was not declared in this scope
+ print("lol true");
+                 ^
+make[2]: *** [CMakeFiles/mobility.dir/src/DropOffController.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

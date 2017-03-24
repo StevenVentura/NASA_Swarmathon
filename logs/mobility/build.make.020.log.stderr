@@ -1,0 +1,33 @@
+In file included from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h:36:12: error: ‘string’ has not been declared
+ void print(string str);
+            ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:38:12: error: variable or field ‘print’ declared void
+ void print(string str)
+            ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:38:12: error: ‘string’ was not declared in this scope
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:38:12: note: suggested alternative:
+In file included from /usr/include/c++/4.8/string:39:0,
+                 from /opt/ros/indigo/include/geometry_msgs/Pose2D.h:9,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.h:5,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:
+/usr/include/c++/4.8/bits/stringfwd.h:62:33: note:   ‘std::string’
+   typedef basic_string<char>    string;   
+                                 ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: In member function ‘void DropOffController::calculateDecision()’:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:104:17: error: invalid conversion from ‘const char*’ to ‘int’ [-fpermissive]
+ print("lol true");
+                 ^
+In file included from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h:36:6: error:   initializing argument 1 of ‘void DropOffController::print(int)’ [-fpermissive]
+ void print(string str);
+      ^
+make[2]: *** [CMakeFiles/mobility.dir/src/DropOffController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+In file included from /home/steven/rover_workspace/src/mobility/src/mobility.cpp:23:0:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h:36:12: error: ‘string’ has not been declared
+ void print(string str);
+            ^
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

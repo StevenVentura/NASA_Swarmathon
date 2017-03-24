@@ -1,0 +1,10 @@
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: In member function ‘void DropOffController::setupPrint()’:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:16:11: error: ‘argc’ was not declared in this scope
+ ros::init(argc, argv, "nothing", ros::init_options::NoSigintHandler);
+           ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:16:17: error: ‘argv’ was not declared in this scope
+ ros::init(argc, argv, "nothing", ros::init_options::NoSigintHandler);
+                 ^
+make[2]: *** [CMakeFiles/mobility.dir/src/DropOffController.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,26 @@
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: In member function ‘void DropOffController::setupPrint()’:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:16:62: error: no matching function for call to ‘init(int, int, const char [8], ros::init_options::InitOption)’
+ ros::init(1, 0, "nothing", ros::init_options::NoSigintHandler);
+                                                              ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:16:62: note: candidates are:
+In file included from /opt/ros/indigo/include/ros/node_handle.h:46:0,
+                 from /opt/ros/indigo/include/ros/ros.h:45,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:8:
+/opt/ros/indigo/include/ros/init.h:83:18: note: void ros::init(int&, char**, const string&, uint32_t)
+ ROSCPP_DECL void init(int &argc, char **argv, const std::string& name, uint32_t options = 0);
+                  ^
+/opt/ros/indigo/include/ros/init.h:83:18: note:   no known conversion for argument 1 from ‘int’ to ‘int&’
+In file included from /opt/ros/indigo/include/ros/node_handle.h:46:0,
+                 from /opt/ros/indigo/include/ros/ros.h:45,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:8:
+/opt/ros/indigo/include/ros/init.h:93:18: note: void ros::init(const M_string&, const string&, uint32_t)
+ ROSCPP_DECL void init(const M_string& remappings, const std::string& name, uint32_t options = 0);
+                  ^
+/opt/ros/indigo/include/ros/init.h:93:18: note:   candidate expects 3 arguments, 4 provided
+/opt/ros/indigo/include/ros/init.h:103:18: note: void ros::init(const VP_string&, const string&, uint32_t)
+ ROSCPP_DECL void init(const VP_string& remapping_args, const std::string& name, uint32_t options = 0);
+                  ^
+/opt/ros/indigo/include/ros/init.h:103:18: note:   candidate expects 3 arguments, 4 provided
+make[2]: *** [CMakeFiles/mobility.dir/src/DropOffController.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

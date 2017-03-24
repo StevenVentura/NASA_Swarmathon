@@ -1,0 +1,14 @@
+In file included from /home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/PickUpController.h:4:50: fatal error: apriltags_ros/AprilTagDetectionArray.h: No such file or directory
+ #include <apriltags_ros/AprilTagDetectionArray.h>
+                                                  ^
+compilation terminated.
+make[2]: *** [CMakeFiles/mobility.dir/src/PickUpController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:19:50: fatal error: apriltags_ros/AprilTagDetectionArray.h: No such file or directory
+ #include <apriltags_ros/AprilTagDetectionArray.h>
+                                                  ^
+compilation terminated.
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,11 @@
+
+(nautilus:4164): Gtk-WARNING **: Failed to register client: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.gnome.SessionManager was not provided by any .service files
+Nautilus-Share-Message: Called "net usershare info" but it failed: 'net usershare' returned error 255: net usershare: cannot open usershare directory /var/lib/samba/usershares. Error No such file or directory
+Please ask your system administrator to enable user sharing.
+
+
+(nautilus:4164): GLib-CRITICAL **: Source ID 112 was not found when attempting to remove it
+
+(nautilus:4164): GLib-CRITICAL **: Source ID 113 was not found when attempting to remove it
+
+(nautilus:4164): GLib-CRITICAL **: Source ID 114 was not found when attempting to remove it

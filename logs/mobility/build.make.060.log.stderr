@@ -1,0 +1,4 @@
+In file included from /home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/PickUpController.h:34:13: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11 [enabled by default]
+ int state = FIXING_CAMERA;
+             ^
