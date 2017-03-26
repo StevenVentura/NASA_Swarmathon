@@ -51,7 +51,8 @@ void continueInterruptedSearch();
 void setDestination(float x, float y);
 void setDestinationAngular(float angle, float distance);
 void doPickupControllerMovements();
-void resetPickupController();
+void resetPickUpController();
+void resetDropOffController();
 
 void print(string str);
 void print(float f);
@@ -74,10 +75,8 @@ geometry_msgs::Pose2D goalLocation;//the location of the next place he is told t
 geometry_msgs::Pose2D origin;//the location of the dropoff collection point base
 geometry_msgs::Pose2D startingLocation;//steven variable, used for calculating distance travelled in linear travel objectives
 bool alreadyFinishedSettingTheAngleHeading = false;//only 1 time
-const int NAVI_SETTING_INITIAL_HEADING = 0, NAVI_WAITING_FOR_MOMENTUM_BEFORE_MOVING = 1, NAVI_MOVING = 2, NAVI_REACHED_GOAL = 3,NAVI_REACHED_GOAL_PAUSE=4;
-int navi_state = NAVI_SETTING_INITIAL_HEADING;
-ros::Duration navi_timeDifferenceObject;
-ros::Time navi_omniTimerStartingTime;
+
+const static float NAVIGATION_ACCURACY = 0.25;//this many meters radius within specified location navigation
 
 
 
@@ -88,9 +87,6 @@ geometry_msgs::Pose2D centerLocationOdom;
 int currentMode = 0;
 float mobilityLoopTimeStep = 0.1; // time between the mobility loop calls
 float status_publish_interval = 1;
-float killSwitchTimeout = 10;
-bool targetDetected = false;
-bool targetCollected = false;
 
 // Set true when the target block is less than targetDist so we continue
 // attempting to pick it up rather than switching to another block in view.
@@ -113,8 +109,6 @@ bool reachedCollectionPoint = false;
 
 // used for calling code once but not in main
 bool init = false;
-
-bool reachedGoalLocation = false;//steven variable. this is in conjunction with setDestination. it means "reached next transformation destination"
 
 //LOOP CONTROL VARIABLES -- done by Steven
 volatile bool headedToBaseOverwriteAll = false;
@@ -176,7 +170,6 @@ ros::Subscriber mapSubscriber;
 // Timers
 ros::Timer stateMachineTimer;
 ros::Timer publish_status_timer;
-ros::Timer targetDetectedTimer;
 
 // records time for delays in sequanced actions, 1 second resolution.
 time_t timerStartTime;
@@ -201,7 +194,6 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& message);
 void mapHandler(const nav_msgs::Odometry::ConstPtr& message);
 void mobilityStateMachine(const ros::TimerEvent&);
 void publishStatusTimerEventHandler(const ros::TimerEvent& event);
-void targetDetectedReset(const ros::TimerEvent& event);
 
 int main(int argc, char **argv) {
 
@@ -219,6 +211,7 @@ origin.y = 0;
 goalLocation.x = -0.5;
 goalLocation.y = 0;
 goalLocation.theta = 3.14;
+searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 
 
     centerLocation.x = 0;//i dont use this stuff really
@@ -264,7 +257,7 @@ goalLocation.theta = 3.14;
 
     publish_status_timer = mNH.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
     stateMachineTimer = mNH.createTimer(ros::Duration(mobilityLoopTimeStep), mobilityStateMachine);
-    targetDetectedTimer = mNH.createTimer(ros::Duration(0), targetDetectedReset, true);//http://docs.ros.org/jade/api/roscpp/html/classros_1_1NodeHandle.html#a3a267bf5bac429dc0948ca0bd0492a16
+//http://docs.ros.org/jade/api/roscpp/html/classros_1_1NodeHandle.html#a3a267bf5bac429dc0948ca0bd0492a16
 	/*
 Timer ros::NodeHandle::createTimer 	( 	Duration  	period,
 		void(T::*)(const TimerEvent &) const  	callback,
@@ -316,19 +309,17 @@ print("headed to base");
 }
 else
 {
-print("its doing this one");
+print("just set the new dest");
 goalLocation.x = x;
 goalLocation.y = y;
 }
 goalLocation.theta = atan2(y - currentLocation.y, x - currentLocation.x);
-stateMachineState = STATE_MACHINE_TRANSFORM;
 
 //reaching the goal control variables: used in bool travelledFarEnough & stuff
 startingLocation.x = currentLocation.x;
 startingLocation.y = currentLocation.y;
-reachedGoalLocation = false;
 alreadyFinishedSettingTheAngleHeading = false;
-navi_state = NAVI_SETTING_INITIAL_HEADING;
+searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 //now let the state machine go back to doing the navigating as before.
 }
 
@@ -362,14 +353,18 @@ void driveOnTimer(float velocity, float torque, float duration)
 isDoingDriveOnTimer = true;
 driveOnTimerStartingTime = ros::Time::now();
 driveOnTimerVelocity = velocity; driveOnTimerTorque = torque; driveOnTimerDuration = duration;
-stateMachineState = STATE_MACHINE_TRANSFORM;
 }
 //instead of calling pickupController.reset
-void resetPickupController()
+void resetPickUpController()
 {
 pickUpController.reset();
 giveControlToPickupController = false;
-targetDetected = false;
+}
+void resetDropOffController()
+{
+dropOffController.reset();
+giveControlToDropOffController = false;
+
 }
 
 //returns angleError
@@ -378,7 +373,7 @@ void doPickupControllerMovements()
 {
 if (pickUpController.getState() == pickUpController.DONE_FAILING)
 {
-resetPickupController();
+resetPickUpController();
 geometry_msgs::Pose2D tempLocation = searchController.search(currentLocation);
 setDestination(tempLocation.x,tempLocation.y);
 }
@@ -387,13 +382,14 @@ setDestination(tempLocation.x,tempLocation.y);
 
 PickUpResult result;
 
-            // we see a block and have not picked one up yet
-            if (targetDetected && !targetCollected) {
                 result = pickUpController.pickUpSelectedTarget(blockBlock);
 	if (pickUpController.getState() == pickUpController.FIXING_CAMERA)
 		{
 		//THIS STATE is handled in mobility because i dont have enough control over it inside pickupcontroller.cpp
 		float blockYawError = currentLocation.theta - correctAngleBearingToPickUpCubePickUpController;
+	print(blockYawError);
+	if (fabs(blockYawError) > 1.20)
+		blockYawError = 0;
 		if (blockYawError > 0.1 || blockYawError < -0.1)
 			result.angleError = blockYawError;
 		else
@@ -432,17 +428,13 @@ else
 		//rip
                 if (result.giveUp) {
 			print("giving up!! D::: lol ");
-                    targetDetected = false;
                     sendDriveCommand(0,0);
-                    resetPickupController();
+                    resetPickUpController();
                 }
 		//got da cube! time 2 bring it home~
                 if (result.pickedUp) {
-print("@@@@@@GOT IT   GOT THE CUBE DESU@@@@@@@@@@@");
-                    resetPickupController();
+                    resetPickUpController();
 
-                    // assume target has been picked up by gripper
-                    targetCollected = true;
 //the cube was just picked up! set the destination to the origin!
                     result.pickedUp = false;
 
@@ -458,102 +450,188 @@ giveControlToPickupController = false;
 
                     return;
                 }
-            } 
-
-else {
-if (targetCollected)
-	print("the target is collected!");
-//cube is collected?
-//i guess if we are holding the cube then keep going.  
-print("going to state machine transform i guess");
-
-            }
 
 
 
-
-        /*// time since timerStartTime was set to current time
-        timerTimeElapsed = time(0) - timerStartTime;
-
-       //one time init code runs here
-        if (!init) {
-            if (timerTimeElapsed > startDelayInSeconds) {
-                centerLocationMap.x = currentLocationAverage.x;
-                centerLocationMap.y = currentLocationAverage.y;
-                centerLocationMap.theta = currentLocationAverage.theta;
-                init = true;//never run again
-            } else {
-		//wait for the start delay
-                return;
-            }
-
-        }
-
-        //if just travelling normally then reset claw values
-        if (!targetCollected && !targetDetected) {
-            // set gripper
-            std_msgs::Float32 angle;
-	    // open fingers
-            angle.data = M_PI_2;fingerAnglePublish.publish(angle);angle.data = 0;
-            // raise wrist
-            wristAnglePublish.publish(angle);
-        }*/
-
+            
 
 
 }//end doPickupControllerMovements
 void doDropOffControllerMovements()
 {
-if (targetCollected && !avoidingObstacle) {
-                // calculate the euclidean distance between
-                // centerLocation and currentLocation
-                dropOffController.setCenterDist(hypot(origin.x - currentLocation.x, origin.y - currentLocation.y));
-                dropOffController.setDataLocations(origin, currentLocation, timerTimeElapsed);
-                DropOffResult result = dropOffController.getState();
-//DROPOFF CONTROLLER
-                if (result.timer) {
-                    timerStartTime = time(0);
-                    reachedCollectionPoint = true;
-                }
+//state machine is handled in here
+const string stateNames[] = {"FINDING_BASE","ADJUSTING_ANGLE_FOR_ENTRY","ENTERING_BASE","DROPPING_CUBE","BACKING_OUT_OF_BASE","DONE_DROPPING_OFF"
+		,"PAUSING_BEFORE_ROTATING_AGAIN","SCOOTING_CLOSER_TO_BASE"};
+print(stateNames[dropOffController.getState()]);
+const int countLeft = dropOffController.getCountLeft();
+const int countRight = dropOffController.getCountRight();
 
-                std_msgs::Float32 fingerAngle;
-		std_msgs::Float32 wristAngle;
+stringstream ss;
+float duration;
+ros::Duration timeDifferenceObject;
+std_msgs::Float32 fingerAngle;
+std_msgs::Float32 wristAngle;
 
-//if he set the finger angle, then set it to the one he gave.
-                if (result.fingerAngle != -1) {
-                    fingerAngle.data = result.fingerAngle;
-                    fingerAnglePublish.publish(fingerAngle);
-                }
-//if he set the wrist angle, then set it to the one he gave.
-                if (result.wristAngle != -1) {
-                    wristAngle.data = result.wristAngle;
-                    wristAnglePublish.publish(wristAngle);
-                }
+dropOffController.setTagCountToZeroIfAppropriate();
 
-//what does reset mean? does it mean he is done taking control of the robot desu?
-                if (result.reset) {
-                    timerStartTime = time(0);
-                    targetCollected = false;
-                    targetDetected = false;
-                    lockTarget = false;
-                    sendDriveCommand(0.0,0);
 
-                    // move back to transform step
-                    stateMachineState = STATE_MACHINE_TRANSFORM;
-                    reachedCollectionPoint = false;
-                    centerLocationOdom = currentLocation;//literally what the fuck lol
+switch(dropOffController.getState()) {
+case (DropOffController::FINDING_BASE):
+//spin until you find a tag
+if (countLeft > 0 || countRight > 0)
+{
+	//found the base!
+	dropOffController.numTimesPausedAndTurned = 0;//reset this value to 0
+	dropOffController.setState(DropOffController::SCOOTING_CLOSER_TO_BASE);
+	sendDriveCommand(0,0);
+	dropOffController.omniTimerStartingTime = ros::Time::now();//reset the timer again
+}
+else
+{
+//spin in oval i guess xd
+sendDriveCommand(0.05,0.35);
+}
 
-                    dropOffController.reset();
-                }
-                //dropoff is controlling robo movement. not mobility.
-                else if (result.goalDriving == false) { 
-                    reachedGoalLocation = true; 
-                    sendDriveCommand(result.cmdVel,result.angleError);//let the dropoffcontroller do the navigation
-                    stateMachineState = STATE_MACHINE_TRANSFORM;//force the machine state to stay in transform and no backup or pickup bullshit
+break;
 
-                    return;
-                }//end if
-               }//END TARGETCOLLECTED DROPOFFCONTROLLER
+case (DropOffController::SCOOTING_CLOSER_TO_BASE):
+//radiusTho = 0;
+duration = 0.50;
+timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
+{
+//scoot!
+sendDriveCommand(0.20,0);
+}
+else
+{
+
+//done scooting
+dropOffController.setState(DropOffController::ADJUSTING_ANGLE_FOR_ENTRY);
+sendDriveCommand(0,0);
+}
+
+break;
+
+//it just saw the base tag so lets rotate and find more
+case (DropOffController::ADJUSTING_ANGLE_FOR_ENTRY):
+duration = 0.75;
+	if (countLeft == 0 && countRight == 0) 
+	{
+	//go back if theres no tags seen lately
+	dropOffController.setState(DropOffController::FINDING_BASE);
+	break;
+	}
+
+timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
+{
+if (countRight > countLeft)
+	sendDriveCommand(0.05,-0.20);
+else
+	sendDriveCommand(0.05,0.20);
+}
+else
+{
+  sendDriveCommand(0,0);
+    if (countLeft > 6 && countRight > 6)
+	dropOffController.setState(DropOffController::ENTERING_BASE);
+    else
+	{
+	dropOffController.numTimesPausedAndTurned++;
+	if (dropOffController.numTimesPausedAndTurned > DropOffController::giveUpAndDropAfterTurningThisManyTimes)
+		dropOffController.setState(DropOffController::DROPPING_CUBE);//give up and drop the cube
+	else
+		dropOffController.setState(DropOffController::PAUSING_BEFORE_ROTATING_AGAIN);
+	}
+  dropOffController.omniTimerStartingTime = ros::Time::now();//reset the timer again
+}//end if/else
+break;
+
+case (DropOffController::PAUSING_BEFORE_ROTATING_AGAIN):
+duration = 2.0;
+timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
+;//wait
+else
+{
+dropOffController.setState(DropOffController::ADJUSTING_ANGLE_FOR_ENTRY);
+dropOffController.omniTimerStartingTime = ros::Time::now();//reset the timer again
+}
+
+break;
+
+case (DropOffController::ENTERING_BASE):
+duration = 4.0;
+timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
+{
+// move forward into base
+sendDriveCommand(0.20,0);
+}
+else
+{
+//stop and goto drop cube
+sendDriveCommand(0,0);
+dropOffController.setState(DropOffController::DROPPING_CUBE);
+}
+
+break;
+
+
+case (DropOffController::DROPPING_CUBE):
+//open the angle to drop the cube
+fingerAngle.data = M_PI_2;
+fingerAnglePublish.publish(fingerAngle);
+//wrist up
+wristAngle.data = 0;
+wristAnglePublish.publish(wristAngle);
+
+//re-calibrate the origin!
+
+origin.x = currentLocation.x;
+origin.y = currentLocation.y;
+origin.theta = currentLocation.theta;
+
+
+dropOffController.setState(DropOffController::BACKING_OUT_OF_BASE);
+dropOffController.omniTimerStartingTime = ros::Time::now();//reset the timer again
+break;
+
+case (DropOffController::BACKING_OUT_OF_BASE):
+duration = 4.0;
+timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
+{
+//back out
+sendDriveCommand(-0.20,0);
+}
+else
+{
+//stop
+sendDriveCommand(0,0);
+dropOffController.setState(DropOffController::DONE_DROPPING_OFF);
+}
+
+break;
+
+case (DropOffController::DONE_DROPPING_OFF):
+//close the angle
+fingerAngle.data = 0;
+fingerAnglePublish.publish(fingerAngle);
+
+
+resetDropOffController();
+
+break;
+
+default:
+dropOffController.setState(DropOffController::FINDING_BASE);
+break;
+
+
+}//end switch
+
 
 }//end doDropOffControllerMovements
 
@@ -580,120 +658,116 @@ float errorYaw = angles::shortest_angular_distance(currentLocation.theta, goalLo
 stringstream ss;
 
 float duration;//for use in switch
+float currentDistanceFromBase;
 
-const string stateNames[] = {"SETTING_INITIAL_HEADING", "WAITING_FOR_MOMENTUM", "NAVI_MOVING","NAVI_REACHED_GOAL","NAVI_REACHED_GOAL_PAUSE"};
+print(searchController.getStateName());
 
-switch (navi_state) {
-//const int NAVI_SETTING_INITIAL_HEADING = 0, NAVI_WAITING_FOR_MOMENTUM_BEFORE_MOVING = 1, NAVI_MOVING = 2, NAVI_REACHED_GOAL = 3;
 
-case (NAVI_SETTING_INITIAL_HEADING):
-if (!reachedGoalLocation && !targetDetected && !isDoingDriveOnTimer) {
-if (fabs(angles::shortest_angular_distance(currentLocation.theta, goalLocation.theta)) > rotateOnlyAngleTolerance)
+switch (searchController.getState()) {
+//const static int SETTING_INITIAL_HEADING = 0, WAITING_FOR_MOMENTUM_BEFORE_MOVING = 1, MOVING_TO_GOAL = 2, REACHED_GOAL = 3, REACHED_GOAL_PAUSE=4;
+
+
+case (SearchController::SETTING_INITIAL_HEADING):
+if (fabs(errorYaw) > rotateOnlyAngleTolerance)
+	//if the angle is not set good enough yet
 	sendDriveCommand(0.05, errorYaw);
 else
 {
-	navi_omniTimerStartingTime = ros::Time::now();
-	navi_state = NAVI_WAITING_FOR_MOMENTUM_BEFORE_MOVING;
+	//else it the angle is done being fixed
+	searchController.omniTimerStartingTime = ros::Time::now();
+	searchController.setState(SearchController::WAITING_FOR_MOMENTUM_BEFORE_MOVING);
 }
-}//end if
 break;
-case (NAVI_WAITING_FOR_MOMENTUM_BEFORE_MOVING):
+case (SearchController::WAITING_FOR_MOMENTUM_BEFORE_MOVING):
 duration = 1.0;
-navi_timeDifferenceObject = ros::Time::now() - navi_omniTimerStartingTime;
-if ((navi_timeDifferenceObject.sec + navi_timeDifferenceObject.nsec/1000000000.0) < duration)
+searchController.timeDifferenceObject = ros::Time::now() - searchController.omniTimerStartingTime;
+if ((searchController.timeDifferenceObject.sec + searchController.timeDifferenceObject.nsec/1000000000.0) < duration)
 {
 sendDriveCommand(0,0);
 //do nothing. just wait before turning.
 }
 else
 {
-if (fabs(angles::shortest_angular_distance(currentLocation.theta, goalLocation.theta)) > rotateOnlyAngleTolerance)
-	navi_state = NAVI_SETTING_INITIAL_HEADING;
+if (fabs(errorYaw) > rotateOnlyAngleTolerance)
+	searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 else
-	navi_state = NAVI_MOVING;
+	searchController.setState(SearchController::MOVING_TO_GOAL);
 }
 
 break;
 
-case (NAVI_MOVING):
-if (!reachedGoalLocation && !targetDetected && !isDoingDriveOnTimer) {
-sendDriveCommand(searchVelocity,0);
-}//end if
+case (SearchController::MOVING_TO_GOAL):
 
-//did we reach the goal yet?
-if (travelledFarEnough() && !reachedGoalLocation && !isDoingDriveOnTimer) 
+if (!travelledFarEnough())
+{
+//keep marching to goal. stay in this state.
+sendDriveCommand(searchVelocity,0);
+}
+else//it has travelled far enough. check if it is within range of goal, and then change state.
 {
 //stop it!
 sendDriveCommand(0,0);
-print("REACHED GOAL");
-reachedGoalLocation = true;
-if (headedToBaseOverwriteAll) {
-headedToBaseOverwriteAll = false;
-giveControlToDropOffController = true;
+if (hypot(currentLocation.x - goalLocation.x , currentLocation.y - goalLocation.y) > NAVIGATION_ACCURACY)
+{
+//reset everything and travel to the destination again.
+setDestination(goalLocation.x,goalLocation.y);
 }
-navi_state = NAVI_REACHED_GOAL_PAUSE;
+else //if close enough to the destination
+{
+searchController.setState(SearchController::REACHED_GOAL_PAUSE);
+}//end else distance>1
 
-}//end travelled far enough within .30 meters or whatever
+
+}//end else travelledFarEnough()
+
+
+
+
 
 
 break;
 
-case (NAVI_REACHED_GOAL_PAUSE):
+case (SearchController::REACHED_GOAL_PAUSE):
 duration = 1.00;
-navi_timeDifferenceObject = ros::Time::now() - navi_omniTimerStartingTime;
-if ((navi_timeDifferenceObject.sec + navi_timeDifferenceObject.nsec/1000000000.0) < duration)
+searchController.timeDifferenceObject = ros::Time::now() - searchController.omniTimerStartingTime;
+if ((searchController.timeDifferenceObject.sec + searchController.timeDifferenceObject.nsec/1000000000.0) < duration)
 {
 //do nothing
 
 }
 else
 {
-navi_state = NAVI_REACHED_GOAL;
+searchController.setState(SearchController::REACHED_GOAL);
 }
 
 break;
 
-case (NAVI_REACHED_GOAL):
-navi_state = NAVI_REACHED_GOAL;
+case (SearchController::REACHED_GOAL):
+searchController.setState(SearchController::REACHED_GOAL);
 
 //choose a new heading if we have none!        
-if (reachedGoalLocation == true && !targetDetected && !isDoingDriveOnTimer) {
+
 print("picking new destination");
 geometry_msgs::Pose2D tempLocation;
 if (travelledFarEnough())
-{
 	tempLocation = searchController.search(goalLocation);
-stringstream ss;
-ss << "heading is " << tempLocation.theta;
-print(ss.str());
-}
 else
 	tempLocation = searchController.search(currentLocation);
-setDestination(tempLocation.x,tempLocation.y);
-      }
+
+  setDestination(tempLocation.x,tempLocation.y);
+
 
 break;
 
-
-
-
-
-
 }//end switch
-
-
-
-
-
-
-
-
 
 
 }//end doFreeMovementStuff
 void doDriveOnTimerStuff()
 {
+
 sendDriveCommand(driveOnTimerVelocity,driveOnTimerTorque);
+
 
 if (hasBeenLongEnoughForDriveOnTimer()) {
 isDoingDriveOnTimer = false;
@@ -732,18 +806,18 @@ doPickupControllerMovements();
 }
 
 //really needing to do a clean surgery replacement of this if() with dropoff controller variable. But avoidingObstacle is important/unhandled right now
-if (giveControlToDropOffController && targetCollected && !avoidingObstacle)
+if (giveControlToDropOffController)// && !avoidingObstacle)
 {
-print("DROPOFF CONTROLLER IS DOING STUFF NOW");
 doDropOffControllerMovements();
 }
 
-if (!isDoingDriveOnTimer && !giveControlToPickupController && !giveControlToDropOffController)//some of the code in here fires when targetCollected (the code to return to base for example)
+if (!isDoingDriveOnTimer && !giveControlToPickupController && !giveControlToDropOffController)//some of the code in here fires when target is Collected (the code to return to base for example)
 {
 doFreeMovementStuff();
 }
 
-if (isDoingDriveOnTimer) 
+//driveOnTimer overwrites everything, so you have to be careful what you allow to start it. This could be problematic for pickup controller?
+if (isDoingDriveOnTimer)
 {
 doDriveOnTimerStuff();
 }
@@ -784,7 +858,7 @@ void sendDriveCommand(double linearVel, double angularError)
 
 float minStrength = 0.135;
 //cos it doesnt spin in this case
-if (velocity.angular.z != 0 && abs(velocity.angular.z) < minStrength)
+if (velocity.angular.z != 0 && fabs(velocity.angular.z) < minStrength)
 	if (velocity.angular.z < 0)//if its negative
 		velocity.angular.z = -minStrength;
 	else//else if its postive
@@ -837,8 +911,17 @@ setDestination(tempLocation.x,tempLocation.y);
 
 
 
-}
+}//end continueinterruptedsearch
 
+
+void doHitTheBaseCode()
+{
+//he just detected one of the base tags
+if (headedToBaseOverwriteAll) {
+headedToBaseOverwriteAll = false;
+giveControlToDropOffController = true;
+}
+}
 
 /*************************
  * ROS CALLBACK HANDLERS *
@@ -854,13 +937,13 @@ void targetHandler(const apriltags_ros::AprilTagDetectionArray::ConstPtr& messag
         return;
 
     // if a target is detected and we are looking for center tags
-    if (message->detections.size() > 0 && !reachedCollectionPoint) {
+    if (message->detections.size() > 0) 
+{
         float cameraOffsetCorrection = 0.020; //meters;
 
         centerSeen = false;
-        double count = 0;
-        double countRight = 0;
-        double countLeft = 0;
+        int countRight = 0;
+        int countLeft = 0;
 
         // this loop is to get the number of center tags
         for (int i = 0; i < message->detections.size(); i++) {
@@ -877,58 +960,42 @@ void targetHandler(const apriltags_ros::AprilTagDetectionArray::ConstPtr& messag
 
 		//if at least 1 tag is seen then centerSeen is true
                 centerSeen = true;
-		//count-suru all of the tags
-                count++;
-            }//end if
+            }//end if 256
         }//end for
 
-        if (centerSeen && targetCollected) {
-headedToBaseOverwriteAll = false;//cos obviously im at the base
-            stateMachineState = STATE_MACHINE_TRANSFORM;
-print("not really sure what it does here to be quite honest desu");
-reachedGoalLocation = true;
-        }//end if
-
-//by "targets" it means the base tags. even though "target" refers to the cubes half the time in this shit code.
-        dropOffController.setDataTargets(count,countLeft,countRight);//has the number of left and right 256 tags (the base tags)
-
-        // if we see the center and we dont have a cube in our hand
-        if (centerSeen && !targetCollected) {
 
 
-            // this code keeps the robot from driving over the center when searching for blocks
-            if (right) {//literally where is this defined
-                // turn away from the center to the left if just driving
-                // around/searching.
-	print("am i turning backwards? if so flip me right");
-	driveOnTimer(0.05,0.55,1);
-            } else {
-	print("am i turning backwards? if so flip me left");
-	driveOnTimer(0.05,-0.55,1);
-            }
+//dropoff tag stuff
+if (countLeft > 0 || countRight > 0)
+{
+dropOffController.setDataTargets(countLeft,countRight);//has the number of left and right 256 tags (the base tags)
+
+        if (centerSeen && headedToBaseOverwriteAll)
+		doHitTheBaseCode();
+
+	//to avoid the center blocks if they are considered an obstacle
+	if (!giveControlToDropOffController)
+		driveOnTimer(0.05,0.55,1);
+	
+	continueInterruptedSearch();
 
 
-continueInterruptedSearch();
+	//note that cubes inside or around the base should not be grabbed
 
-            targetDetected = false;//cos cubes around or inside the base dont count
-            resetPickupController();//cos you dont want to pick up cubes inside or around the base
-            return;
-        }
-    }// end of if (center blocks seen & not holding cube)
+        resetPickUpController();//cos you dont want to pick up cubes inside or around the base
+        return;
+}//end if dropoff code
+        }//end if more than 0 tags (base or cube) are detected
 
 
-	//start of cuck code. everything below is a cube april tag i guess cos of the return ? 
+	//start of pickup code
 
     PickUpResult result;
-	    //foudn cube tag
-    if (message->detections.size() > 0 && !targetCollected) {
-targetDetected = true;
+    if (message->detections.size() > 0 && !giveControlToDropOffController && !headedToBaseOverwriteAll) {
 if (!giveControlToPickupController)
 	print("GIVING CONTROL TO PICKUP CONTROLLER");
 
-
-
-PickUpResult result = pickUpController.selectTarget(message);
+result = pickUpController.selectTarget(message);
 if (!giveControlToPickupController)//this code runs once per "state change"
 {
 	//because sometimes its still avoiding an obstacle or something but then it sees the block and it forgets to fix the angle after it finishes doing drive on timer
@@ -974,20 +1041,14 @@ void obstacleHandler(const std_msgs::UInt8::ConstPtr& message) {
 
 if (! (currentMode == 2 || currentMode == 3)) return; //its in manual mode so dont move it pls
 
-    if ((!targetDetected || targetCollected) && (message->data > 0)) {
+    if (message->data > 0) {
 
-if (!isDoingDriveOnTimer)
-{
-stringstream ss;
-ss << "(algy?) obstacle detected! " << (int)(message->data) << "  " << (int)(time(0));
-print(ss.str());
-}
 
 
         // obstacle on right side
         if (message->data == 1) {
             // select new heading 0.2 radians to the left
-if (!isDoingDriveOnTimer)	    
+if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll)	//because the cube blocks the sensor    
 {
 print("obstacle on right. turning left");
 driveOnTimer(0.05,0.55,1.0);
@@ -998,7 +1059,7 @@ driveOnTimer(0.05,0.55,1.0);
         // obstacle in front or on left side
         else if (message->data == 2) {
             // select new heading 0.2 radians to the right
-if (!isDoingDriveOnTimer)
+if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll)//because the cube blocks the sensor
 {
 print("obstacle on left. turning right");
 driveOnTimer(0.05,0.55,1.0);
@@ -1060,21 +1121,7 @@ void publishStatusTimerEventHandler(const ros::TimerEvent&) {
 }
 
 
-/*
-targetDetectedReset is only called once at the start of the program.
-*/
-void targetDetectedReset(const ros::TimerEvent& event) {
-    targetDetected = false;
 
-    std_msgs::Float32 angle;
-    angle.data = 0;
-
-    // close fingers
-    fingerAnglePublish.publish(angle);
-
-    // raise wrist
-    wristAnglePublish.publish(angle);
-}
 
 void sigintEventHandler(int sig) {
     // All the default sigint handler does is call shutdown()

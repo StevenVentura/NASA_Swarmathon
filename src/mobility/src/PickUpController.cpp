@@ -102,7 +102,7 @@ break;
 26 inches = 0.654 = bad pickup (too short)
 */
 case (APPROACHING_CUBE):
-timeToEnsureStraightening = 0.0;
+timeToEnsureStraightening = 2.5;
 duration = 3.0 * (distanceToBlockUponFirstSight / 0.320) + timeToEnsureStraightening;
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
@@ -166,7 +166,7 @@ break;
 
 case(PICKUP_FAILED_BACK_UP):
 
-duration = 3.00;
+duration = 2.00;
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
@@ -236,7 +236,7 @@ PickUpResult PickUpController::selectTarget(const apriltags_ros::AprilTagDetecti
             target = i;
             closest = test;
             blockDist = hypot(tagPose.pose.position.z, tagPose.pose.position.y); //distance from bottom center of chassis ignoring height.
-            blockDist = sqrt(blockDist*blockDist - 0.195*0.195);//not sure what this is about desu
+            blockDist = sqrt(blockDist*blockDist - 0.195*0.195);//not sure why
             blockYawError = atan((tagPose.pose.position.x + 0.020)/blockDist)*1.05; //angle to block from bottom center of chassis on the horizontal.
         }
     }

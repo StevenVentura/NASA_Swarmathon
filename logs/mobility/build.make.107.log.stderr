@@ -1,0 +1,4 @@
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void doDropOffControllerMovements()’:
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:509:25: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11 [enabled by default]
+ const string stateNames[] {"FINDING_BASE","ADJUSTING_ANGLE_FOR_ENTRRY","ENTERING_BASE","DROPPING_CUBE","BACKING_OUT_OF_BASE","DONE_DROPPING_OFF"};
+                         ^

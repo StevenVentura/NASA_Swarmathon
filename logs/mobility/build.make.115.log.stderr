@@ -1,0 +1,44 @@
+In file included from /home/steven/rover_workspace/src/mobility/src/SearchController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/SearchController.h:19:14: error: ‘string’ does not name a type
+ const static string stateNames[] = {"SETTING_INITIAL_HEADING", "WAITING_FOR_MOMENTUM", "MOVING_TO_GOAL","REACHED_GOAL","REACHED_GOAL_PAUSE"};
+              ^
+/home/steven/rover_workspace/src/mobility/src/SearchController.h: In member function ‘int SearchController::getState()’:
+/home/steven/rover_workspace/src/mobility/src/SearchController.h:24:23: error: ‘state’ was not declared in this scope
+ int getState(){return state;}
+                       ^
+/home/steven/rover_workspace/src/mobility/src/SearchController.h: In member function ‘void SearchController::setState(int)’:
+/home/steven/rover_workspace/src/mobility/src/SearchController.h:25:22: error: ‘state’ was not declared in this scope
+ void setState(int s){state=s;}
+                      ^
+make[2]: *** [CMakeFiles/mobility.dir/src/SearchController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+In file included from /home/steven/rover_workspace/src/mobility/src/mobility.cpp:24:0:
+/home/steven/rover_workspace/src/mobility/src/SearchController.h:19:14: error: ‘string’ does not name a type
+ const static string stateNames[] = {"SETTING_INITIAL_HEADING", "WAITING_FOR_MOMENTUM", "MOVING_TO_GOAL","REACHED_GOAL","REACHED_GOAL_PAUSE"};
+              ^
+/home/steven/rover_workspace/src/mobility/src/SearchController.h: In member function ‘int SearchController::getState()’:
+/home/steven/rover_workspace/src/mobility/src/SearchController.h:24:23: error: ‘state’ was not declared in this scope
+ int getState(){return state;}
+                       ^
+/home/steven/rover_workspace/src/mobility/src/SearchController.h:24:23: note: suggested alternative:
+In file included from /usr/include/boost/thread.hpp:24:0,
+                 from /opt/ros/indigo/include/tf/transform_listener.h:43,
+                 from /home/steven/rover_workspace/src/mobility/src/mobility.cpp:7:
+/usr/include/boost/thread/future.hpp:168:14: note:   ‘boost::future_state::state’
+         enum state { uninitialized, waiting, ready, moved, deferred };
+              ^
+In file included from /home/steven/rover_workspace/src/mobility/src/mobility.cpp:24:0:
+/home/steven/rover_workspace/src/mobility/src/SearchController.h: In member function ‘void SearchController::setState(int)’:
+/home/steven/rover_workspace/src/mobility/src/SearchController.h:25:22: error: ‘state’ was not declared in this scope
+ void setState(int s){state=s;}
+                      ^
+/home/steven/rover_workspace/src/mobility/src/SearchController.h:25:22: note: suggested alternative:
+In file included from /usr/include/boost/thread.hpp:24:0,
+                 from /opt/ros/indigo/include/tf/transform_listener.h:43,
+                 from /home/steven/rover_workspace/src/mobility/src/mobility.cpp:7:
+/usr/include/boost/thread/future.hpp:168:14: note:   ‘boost::future_state::state’
+         enum state { uninitialized, waiting, ready, moved, deferred };
+              ^
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

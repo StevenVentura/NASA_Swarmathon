@@ -1,0 +1,81 @@
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: In constructor ‘DropOffController::DropOffController()’:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:21:5: error: ‘seenEnoughCenterTagsCount’ was not declared in this scope
+     seenEnoughCenterTagsCount = 10;//seen enough for what tho? i said for what tho?
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:22:5: error: ‘collectionPointVisualDistance’ was not declared in this scope
+     collectionPointVisualDistance = 0.5; //in meters
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:26:5: error: ‘result’ was not declared in this scope
+     result.cmdVel = 0;//the movement speed to give mr. robot upon exiting this module
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:32:5: error: ‘reachedCollectionPoint’ was not declared in this scope
+     reachedCollectionPoint = false;
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:44:5: error: ‘left’ was not declared in this scope
+     left = false;
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:44:5: note: suggested alternative:
+In file included from /usr/include/c++/4.8/ios:42:0,
+                 from /usr/include/c++/4.8/ostream:38,
+                 from /usr/include/c++/4.8/iostream:39,
+                 from /opt/ros/indigo/include/ros/time.h:54,
+                 from /opt/ros/indigo/include/ros/serialization.h:34,
+                 from /opt/ros/indigo/include/geometry_msgs/Pose2D.h:14,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.h:5,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:
+/usr/include/c++/4.8/bits/ios_base.h:922:3: note:   ‘std::left’
+   left(ios_base& __base)
+   ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:45:5: error: ‘right’ was not declared in this scope
+     right = false;
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:45:5: note: suggested alternative:
+In file included from /usr/include/c++/4.8/ios:42:0,
+                 from /usr/include/c++/4.8/ostream:38,
+                 from /usr/include/c++/4.8/iostream:39,
+                 from /opt/ros/indigo/include/ros/time.h:54,
+                 from /opt/ros/indigo/include/ros/serialization.h:34,
+                 from /opt/ros/indigo/include/geometry_msgs/Pose2D.h:14,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.h:5,
+                 from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:
+/usr/include/c++/4.8/bits/ios_base.h:930:3: note:   ‘std::right’
+   right(ios_base& __base)
+   ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:49:5: error: ‘centerApproach’ was not declared in this scope
+     centerApproach = false;
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:50:5: error: ‘timeWithoutSeeingEnoughCenterTags’ was not declared in this scope
+     timeWithoutSeeingEnoughCenterTags = time(0);
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:51:5: error: ‘seenEnoughCenterTags’ was not declared in this scope
+     seenEnoughCenterTags = false;
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:52:5: error: ‘centerSeen’ was not declared in this scope
+     centerSeen = false;
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:53:5: error: ‘timeElapsedSinceTimeSinceSeeingEnoughCenterTags’ was not declared in this scope
+     timeElapsedSinceTimeSinceSeeingEnoughCenterTags = time(0);
+     ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp: At global scope:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:68:113: error: no ‘void DropOffController::setDataLocations(geometry_msgs::Pose2D, geometry_msgs::Pose2D, float)’ member function declared in class ‘DropOffController’
+ void DropOffController::setDataLocations(geometry_msgs::Pose2D center, geometry_msgs::Pose2D current, float sync) {
+                                                                                                                 ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:78:31: error: no ‘void DropOffController::reset()’ member function declared in class ‘DropOffController’
+ void DropOffController::reset() {
+                               ^
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:102:6: error: prototype for ‘void DropOffController::setDataTargets(int, double, double)’ does not match any in class ‘DropOffController’
+ void DropOffController::setDataTargets(int count, double countLeft, double countRight)
+      ^
+In file included from /home/steven/rover_workspace/src/mobility/src/DropOffController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h:19:10: error: candidate is: void DropOffController::setDataTargets(int, int)
+     void setDataTargets(int numLeft, int numRight);
+          ^
+make[2]: *** [CMakeFiles/mobility.dir/src/DropOffController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void targetHandler(const ConstPtr&)’:
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:842:22: error: no post-increment operator for type
+                 count++;
+                      ^
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2
