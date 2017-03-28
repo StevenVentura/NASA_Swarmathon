@@ -108,7 +108,7 @@ bool centerSeen = false;
 bool reachedCollectionPoint = false;
 
 // used for calling code once but not in main
-bool init = false;
+volatile bool initRun = true;
 
 //LOOP CONTROL VARIABLES -- done by Steven
 volatile bool headedToBaseOverwriteAll = false;
@@ -203,15 +203,8 @@ int main(int argc, char **argv) {
     // instantiate random number generator
     rng = new random_numbers::RandomNumberGenerator();
 
-origin.theta = 0;//means nothing in the code im pretty sure cos usually we use setDestination(float,float)
-origin.x = 0;
-origin.y = 0;
 
-//setDestination(1.0, 0.0);
-goalLocation.x = -0.5;
-goalLocation.y = 0;
-goalLocation.theta = 3.14;
-searchController.setState(SearchController::SETTING_INITIAL_HEADING);
+
 
 
     centerLocation.x = 0;//i dont use this stuff really
@@ -296,6 +289,26 @@ Parameters:
     return EXIT_SUCCESS;
 }
 
+void initializeStuff()
+{
+std_msgs::Float32 fingerAngle,wristAngle;
+fingerAngle.data = 0; wristAngle.data = 0;
+    // close fingers
+    fingerAnglePublish.publish(fingerAngle);
+    // raise wrist
+    wristAnglePublish.publish(wristAngle);
+
+
+searchController.setState(SearchController::SETTING_INITIAL_HEADING);
+
+//the origin is supposed to be like 50cm in front of him
+origin.x = currentLocation.x + 0.50 * cos(currentLocation.theta);
+origin.y = currentLocation.y + 0.50 * sin(currentLocation.theta);
+
+setDestination(origin.x,origin.y);
+print("done initializing");
+}
+
 //NOTE: this cannot be used until the publishers are set up!! this caused my robot to not appear on the list and gave me a runtime error!
 //another note: SetDestination is part of normal movement controller, and is #Trumped by other control handler booleans. 
 //steven code. used in pickupcontroller and sets the angle for you. cos thats how it should be done.
@@ -376,6 +389,7 @@ if (pickUpController.getState() == pickUpController.DONE_FAILING)
 resetPickUpController();
 geometry_msgs::Pose2D tempLocation = searchController.search(currentLocation);
 setDestination(tempLocation.x,tempLocation.y);
+return;
 }
 
 
@@ -388,9 +402,11 @@ PickUpResult result;
 		//THIS STATE is handled in mobility because i dont have enough control over it inside pickupcontroller.cpp
 		float blockYawError = currentLocation.theta - correctAngleBearingToPickUpCubePickUpController;
 	print(blockYawError);
-	if (fabs(blockYawError) > 1.20)
-		blockYawError = 0;
-		if (blockYawError > 0.1 || blockYawError < -0.1)
+	if (blockYawError > 1.2)
+	print("literally why");
+
+
+		if (blockYawError > 0.2 || blockYawError < -0.2)
 			result.angleError = blockYawError;
 		else
 		{
@@ -496,7 +512,7 @@ break;
 
 case (DropOffController::SCOOTING_CLOSER_TO_BASE):
 //radiusTho = 0;
-duration = 0.50;
+duration = 0.50 - 0.50;
 timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
 {
@@ -527,14 +543,14 @@ timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTim
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
 {
 if (countRight > countLeft)
-	sendDriveCommand(0.05,-0.20);
+	sendDriveCommand(0.05,-0.30);
 else
-	sendDriveCommand(0.05,0.20);
+	sendDriveCommand(0.05,0.30);
 }
 else
 {
   sendDriveCommand(0,0);
-    if (countLeft > 6 && countRight > 6)
+    if (countLeft > 4 && countRight > 4)
 	dropOffController.setState(DropOffController::ENTERING_BASE);
     else
 	{
@@ -562,7 +578,7 @@ dropOffController.omniTimerStartingTime = ros::Time::now();//reset the timer aga
 break;
 
 case (DropOffController::ENTERING_BASE):
-duration = 4.0;
+duration = 2.0;
 timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
 {
@@ -777,6 +793,13 @@ continueInterruptedSearch();
 }//end doDriveOnTimerStuff
 
 void mobilityStateMachine(const ros::TimerEvent&) {
+
+if (initRun && (currentMode == 2 || currentMode == 3) )
+{
+initializeStuff();
+initRun = false;
+return;
+}
 
     std_msgs::String stateMachineMsg;
     
@@ -1048,7 +1071,7 @@ if (! (currentMode == 2 || currentMode == 3)) return; //its in manual mode so do
         // obstacle on right side
         if (message->data == 1) {
             // select new heading 0.2 radians to the left
-if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll)	//because the cube blocks the sensor    
+if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll && !giveControlToPickupController)	//because the cube blocks the sensor    
 {
 print("obstacle on right. turning left");
 driveOnTimer(0.05,0.55,1.0);
@@ -1059,18 +1082,15 @@ driveOnTimer(0.05,0.55,1.0);
         // obstacle in front or on left side
         else if (message->data == 2) {
             // select new heading 0.2 radians to the right
-if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll)//because the cube blocks the sensor
+if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll && !giveControlToPickupController)//because the cube blocks the sensor
 {
 print("obstacle on left. turning right");
 driveOnTimer(0.05,0.55,1.0);
 }
 
+
         }
 
-        // switch to transform state to trigger collision avoidance
-        stateMachineState = STATE_MACHINE_TRANSFORM;
-
-      //  avoidingObstacle = true;
     }
 
     // the front ultrasond is blocked very closely. 0.14m currently. this is very important code as it tells us when the block has been picked up.
@@ -1159,41 +1179,6 @@ void mapAverage() {
     currentLocationAverage.theta = theta;
 
 
-    // only run below code if a centerLocation has been set by initilization
-    if (init) {
-        // map frame
-        geometry_msgs::PoseStamped mapPose;
-
-        // setup msg to represent the center location in map frame
-        mapPose.header.stamp = ros::Time::now();
-
-        mapPose.header.frame_id = publishedName + "/map";
-        mapPose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0, 0, centerLocationMap.theta);
-        mapPose.pose.position.x = centerLocationMap.x;
-        mapPose.pose.position.y = centerLocationMap.y;
-        geometry_msgs::PoseStamped odomPose;
-        string x = "";
-
-        try { //attempt to get the transform of the center point in map frame to odom frame.
-            tfListener->waitForTransform(publishedName + "/map", publishedName + "/odom", ros::Time::now(), ros::Duration(1.0));
-            tfListener->transformPose(publishedName + "/odom", mapPose, odomPose);
-        }
-
-        catch(tf::TransformException& ex) {
-            ROS_INFO("Received an exception trying to transform a point from \"map\" to \"odom\": %s", ex.what());
-            x = "Exception thrown " + (string)ex.what();
-            std_msgs::String msg;
-            stringstream ss;
-            ss << "Exception in mapAverage() " + (string)ex.what();
-            msg.data = ss.str();
-            infoLogPublisher.publish(msg);
-        }
-
-        // Use the position and orientation provided by the ros transform.
-        centerLocation.x = odomPose.pose.position.x; //set centerLocation in odom frame
-        centerLocation.y = odomPose.pose.position.y;
-
-
-    }
+    
 }
 

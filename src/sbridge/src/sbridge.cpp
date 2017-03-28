@@ -45,11 +45,7 @@ void sbridge::cmdHandler(const geometry_msgs::Twist::ConstPtr& message) {
     {
         forward = 0;
     }
-    /*std_msgs::String msg;
-   stringstream ss;
-   ss << "";
-   msg.data = ss.str();
-   infoLogPublisher.publish(msg);*/
+   
 
     velocity.linear.x = forward,
             velocity.angular.z = turn;

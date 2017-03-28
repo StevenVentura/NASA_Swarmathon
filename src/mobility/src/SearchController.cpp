@@ -14,8 +14,8 @@ geometry_msgs::Pose2D SearchController::search(geometry_msgs::Pose2D currentLoca
 float newAngle = rng->gaussian(currentLocation.theta, 0.50);
 
 //select new position!
-goalLocation.x = currentLocation.x + 0.35 * cos(newAngle);
-goalLocation.y = currentLocation.y + 0.35 * sin(newAngle);
+goalLocation.x = currentLocation.x + 0.70 * cos(newAngle);
+goalLocation.y = currentLocation.y + 0.70 * sin(newAngle);
 
 
   return goalLocation;
