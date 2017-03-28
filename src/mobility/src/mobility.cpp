@@ -400,15 +400,47 @@ PickUpResult result;
 	if (pickUpController.getState() == pickUpController.FIXING_CAMERA)
 		{
 		//THIS STATE is handled in mobility because i dont have enough control over it inside pickupcontroller.cpp
-		float blockYawError = currentLocation.theta - correctAngleBearingToPickUpCubePickUpController;
-	print(blockYawError);
-	if (blockYawError > 1.2)
-	print("literally why");
 
 
-		if (blockYawError > 0.2 || blockYawError < -0.2)
-			result.angleError = blockYawError;
-		else
+//		float blockYawError = currentLocation.theta - correctAngleBearingToPickUpCubePickUpController;
+float myAngle;
+float goodAngle;
+float twopi = 2*3.1415926535;
+float pi = twopi / 2;
+float tolerance = 0.10;
+
+myAngle = currentLocation.theta;
+goodAngle = correctAngleBearingToPickUpCubePickUpController;
+while(myAngle < 0)
+	myAngle = myAngle + twopi;
+while (myAngle > twopi)
+	myAngle = myAngle - twopi;
+while (goodAngle < 0)
+	goodAngle = goodAngle + twopi;
+while (goodAngle > twopi)
+	goodAngle = goodAngle - twopi;
+
+
+
+float blockYawError = myAngle - goodAngle;
+if (blockYawError < 0)
+{
+while (blockYawError < -pi)
+	blockYawError = blockYawError + twopi;
+}
+else if (blockYawError > 0)
+{
+while(blockYawError > pi)
+	blockYawError = blockYawError - twopi;
+
+}
+
+
+		if (blockYawError > tolerance)
+		   result.angleError = 0.20;	
+		else if (blockYawError < -tolerance)
+		   result.angleError = -0.20;
+		else //if its good!
 		{
 			result.angleError = 0;
 			pickUpController.state = pickUpController.APPROACHING_CUBE;
@@ -419,7 +451,7 @@ PickUpResult result;
 
 		}//end STATE FIXING_CAMERA
 
-stringstream ss;
+
 const string stateNames[] = {"FIXING_CAMERA", "APPROACHING_CUBE", "PICKING_UP_CUBE","VERIFYING_PICKUP", "PICKUP_FAILED_BACK_UP","DONE_FAILING","DONE_SUCCESS","WAIT_BEFORE_RAISING_WRIST"};
 print(stateNames[pickUpController.getState()]);
 

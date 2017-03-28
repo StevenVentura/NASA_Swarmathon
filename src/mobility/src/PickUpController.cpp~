@@ -102,7 +102,7 @@ break;
 26 inches = 0.654 = bad pickup (too short)
 */
 case (APPROACHING_CUBE):
-timeToEnsureStraightening = 0;
+timeToEnsureStraightening = 0.5;
 duration = 3.0 * (distanceToBlockUponFirstSight / 0.320) + timeToEnsureStraightening;
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
