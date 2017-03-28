@@ -103,7 +103,7 @@ break;
 */
 case (APPROACHING_CUBE):
 timeToEnsureStraightening = 0;
-duration = 3.0 * (distanceToBlockUponFirstSight / 0.320) + timeToEnsureStraightening;
+duration = 2.5 * (distanceToBlockUponFirstSight / 0.320) + timeToEnsureStraightening;
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
 {
@@ -166,7 +166,7 @@ break;
 
 case(PICKUP_FAILED_BACK_UP):
 
-duration = 2.00;
+duration = 1.75;
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)

@@ -407,7 +407,7 @@ float myAngle;
 float goodAngle;
 float twopi = 2*3.1415926535;
 float pi = twopi / 2;
-float tolerance = 0.10;
+float tolerance = 0.05;
 
 myAngle = currentLocation.theta;
 goodAngle = correctAngleBearingToPickUpCubePickUpController;
@@ -437,9 +437,9 @@ while(blockYawError > pi)
 
 
 		if (blockYawError > tolerance)
-		   result.angleError = 0.20;	
+		   result.angleError = 0.275;	
 		else if (blockYawError < -tolerance)
-		   result.angleError = -0.20;
+		   result.angleError = -0.275;
 		else //if its good!
 		{
 			result.angleError = 0;
@@ -453,7 +453,7 @@ while(blockYawError > pi)
 
 
 const string stateNames[] = {"FIXING_CAMERA", "APPROACHING_CUBE", "PICKING_UP_CUBE","VERIFYING_PICKUP", "PICKUP_FAILED_BACK_UP","DONE_FAILING","DONE_SUCCESS","WAIT_BEFORE_RAISING_WRIST"};
-print(stateNames[pickUpController.getState()]);
+
 
 if (result.angleError != 0 && result.cmdVel == 0)
 	sendDriveCommand(0.05,-1*result.angleError);
@@ -708,7 +708,7 @@ stringstream ss;
 float duration;//for use in switch
 float currentDistanceFromBase;
 
-print(searchController.getStateName());
+
 
 
 switch (searchController.getState()) {
@@ -1092,6 +1092,8 @@ print(ss.str());
     sendDriveCommand(0.0, 0.0);
 }
 
+
+
 void obstacleHandler(const std_msgs::UInt8::ConstPtr& message) {
 
 if (! (currentMode == 2 || currentMode == 3)) return; //its in manual mode so dont move it pls
@@ -1102,10 +1104,13 @@ if (! (currentMode == 2 || currentMode == 3)) return; //its in manual mode so do
 
         // obstacle on right side
         if (message->data == 1) {
+
+
+print("obstacle on right ");
             // select new heading 0.2 radians to the left
-if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll && !giveControlToPickupController)	//because the cube blocks the sensor    
+if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll && !giveControlToPickupController && !giveControlToDropOffController)	//because the cube blocks the sensor    
 {
-print("obstacle on right. turning left");
+//print("obstacle on right. turning left");
 driveOnTimer(0.05,0.55,1.0);
 }
 
@@ -1113,10 +1118,13 @@ driveOnTimer(0.05,0.55,1.0);
 
         // obstacle in front or on left side
         else if (message->data == 2) {
+print("obstacle on left");
+
+
             // select new heading 0.2 radians to the right
-if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll && !giveControlToPickupController)//because the cube blocks the sensor
+if (!isDoingDriveOnTimer && !headedToBaseOverwriteAll && !giveControlToPickupController && !giveControlToDropOffController)//because the cube blocks the sensor
 {
-print("obstacle on left. turning right");
+//print("obstacle on left. turning right");
 driveOnTimer(0.05,0.55,1.0);
 }
 

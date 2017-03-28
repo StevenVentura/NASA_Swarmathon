@@ -12,7 +12,7 @@
 using namespace std;
 
 //Globals
-double collisionDistance = 0.35; //meters the ultrasonic detectors will flag obstacles
+double collisionDistance = 0.60; //meters the ultrasonic detectors will flag obstacles
 string publishedName;
 char host[128];
 
@@ -53,18 +53,60 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
+/*
+
+ros::Time omniTimerStartingTime;
+ros::Duration timeDifferenceObject = ros::Time::now() - driveOnTimerStartingTime;
+timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
+*/
+
+ros::Time timerStartingTimes[3];
+bool isDown[3];
+
+
+
+
 void sonarHandler(const sensor_msgs::Range::ConstPtr& sonarLeft, const sensor_msgs::Range::ConstPtr& sonarCenter, const sensor_msgs::Range::ConstPtr& sonarRight) {
 	std_msgs::UInt8 obstacleMode;
+
+ros::Time now = ros::Time::now();
+float sonarReadings[] = {sonarLeft->range, sonarCenter->range, sonarRight->range};
+float dataToSend[] =    {2,		   2,			1};
+int i;
+for (i = 0; i < 3; i++)
+{
+ros::Duration timeDifference = now - timerStartingTimes[i];
+if (sonarReadings[i] > collisionDistance)
+{//reset the time-it-has-been-down
+isDown[i] = false;
+}
+else//its pressed down
+{
+if (isDown[i])
+{
+if (timeDifference.sec + timeDifference.nsec/1000000000.0 > 0.8)//0.5 seconds
+{
+//send it
+obstacleMode.data = dataToSend[i];
+}
+}
+else
+{
+timerStartingTimes[i] = now;
+isDown[i] = true;
+}
+
+
+}
+
+}//end for
+
 	
 	if ((sonarLeft->range > collisionDistance) && (sonarCenter->range > collisionDistance) && (sonarRight->range > collisionDistance)) {
 		obstacleMode.data = 0; //no collision
 	}
-	else if ((sonarLeft->range > collisionDistance) && (sonarRight->range < collisionDistance)) {
-		obstacleMode.data = 1; //collision on right side
-	}
-	else {
-		obstacleMode.data = 2; //collision in front or on left side
-	}
+	
 	if (sonarCenter->range < 0.12) //block in front of center unltrasound.
 	{
 		obstacleMode.data = 4;
