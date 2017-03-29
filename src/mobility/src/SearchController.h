@@ -22,6 +22,21 @@ ros::Duration timeDifferenceObject;
 ros::Time omniTimerStartingTime;
 int state;
 
+
+//TODO: initialize these when you set the initial origin
+float petalTheta;
+float petalLength;
+const static float petalAngleIncrement = (2*3.1415926535) / 6;
+
+bool headedBackToBase;
+
+
+
+
+
+
+
+
 std::string getStateName() {
 const std::string stateNames[] = {"SETTING_INITIAL_HEADING", "WAITING_FOR_MOMENTUM", "MOVING_TO_GOAL","REACHED_GOAL","REACHED_GOAL_PAUSE"};
 return stateNames[getState()];
@@ -29,10 +44,6 @@ return stateNames[getState()];
 
 int getState(){return state;}
 void setState(int s){state=s;}
-
-
-    // performs search pattern
-    geometry_msgs::Pose2D search(geometry_msgs::Pose2D currentLocation);
 
   private:
 

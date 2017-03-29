@@ -1,0 +1,43 @@
+[  0%] [  0%] [  0%] [  0%] [  0%] [  0%] Built target tf2_msgs_generate_messages_lisp
+Built target rosgraph_msgs_generate_messages_lisp
+Built target roscpp_generate_messages_lisp
+Built target roscpp_generate_messages_py
+Built target sensor_msgs_generate_messages_cpp
+Built target tf_generate_messages_cpp
+[  0%] Built target geometry_msgs_generate_messages_py
+[  0%] [  0%] Built target geometry_msgs_generate_messages_cpp
+Built target geometry_msgs_generate_messages_lisp
+[  0%] [  0%] [  0%] Built target roscpp_generate_messages_cpp
+Built target std_msgs_generate_messages_py
+[  0%] Built target actionlib_generate_messages_cpp
+Built target actionlib_msgs_generate_messages_cpp
+[  0%] Built target actionlib_generate_messages_lisp
+[  0%] [  0%] [  0%] [  0%] [  0%] Built target tf2_msgs_generate_messages_py
+Built target actionlib_generate_messages_py
+Built target actionlib_msgs_generate_messages_py
+Built target rosgraph_msgs_generate_messages_py
+Built target actionlib_msgs_generate_messages_lisp
+[  0%] Built target sensor_msgs_generate_messages_py
+[  0%] Built target tf_generate_messages_lisp
+[  0%] [  0%] [  0%] Built target sensor_msgs_generate_messages_lisp
+Built target std_msgs_generate_messages_cpp
+Built target rosgraph_msgs_generate_messages_cpp
+[  0%] [  0%] Built target tf_generate_messages_py
+Built target std_msgs_generate_messages_lisp
+[  0%] Built target tf2_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target mobility
+[0m[ 25%] [32mBuilding CXX object CMakeFiles/mobility.dir/src/mobility.cpp.o
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void doPickupControllerMovements()’:
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:403:51: error: too few arguments to function ‘geometry_msgs::Pose2D stevenSearch(bool)’
+ geometry_msgs::Pose2D tempLocation = stevenSearch();
+                                                   ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:56:23: note: declared here
+ geometry_msgs::Pose2D stevenSearch(bool);
+                       ^
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void doHitTheBaseCode()’:
+/home/steven/rover_workspace/src/mobility/src/mobility.cpp:1018:10: error: no match for call to ‘(std::stringstream {aka std::basic_stringstream<char>}) ()’
+ print(ss());
+          ^
+make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2
