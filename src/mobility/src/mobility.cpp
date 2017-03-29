@@ -712,10 +712,6 @@ return (currentDistanceFromStart / distanceFromStartToFinish) >= percentageTrave
 }
 
 //void search
-/*
-stevenSearch gives you the coordinates of the "current destination" for SearchController.
-
-*/
 geometry_msgs::Pose2D stevenSearch() {
   
 geometry_msgs::Pose2D goalLocation;
@@ -728,6 +724,8 @@ goalLocation.y = origin.y;
 }
 else
 {
+searchController.petalTheta += SearchController::petalAngleIncrement;
+
 //select new position!
 goalLocation.x = origin.x + searchController.petalLength * cos(searchController.petalTheta);
 goalLocation.y = origin.y + searchController.petalLength * sin(searchController.petalTheta);
@@ -823,17 +821,6 @@ if ((searchController.timeDifferenceObject.sec + searchController.timeDifference
 }
 else
 {
-print("picking new destination");
-geometry_msgs::Pose2D tempLocation;
-searchController.headedBackToBase = !searchController.headedBackToBase;
-if (headedBackToBase == false)
-	searchController.petalTheta += SearchController::petalAngleIncrement;
-
-tempLocation = stevenSearch();
-
-
-setDestination(tempLocation.x, tempLocation.y);
-
 searchController.setState(SearchController::REACHED_GOAL);
 }
 
@@ -843,11 +830,13 @@ case (SearchController::REACHED_GOAL):
 
 //searchController.setState(SearchController::REACHED_GOAL);
 
-sendDriveCommand(0,0);
+print("picking new destination");
+geometry_msgs::Pose2D tempLocation;
+searchController.headedBackToBase = !searchController.headedBackToBase;
+tempLocation = stevenSearch();
 
 
-
-
+setDestination(tempLocation.x, tempLocation.y);
 
 
 
@@ -1024,23 +1013,6 @@ if (headedToBaseOverwriteAll) {
 headedToBaseOverwriteAll = false;
 giveControlToDropOffController = true;
 }
-/*
-flower petal code:
-let it adjust the angle until it faces the base. if it can see the base then it has a problem and needs to choose a new angle.
-*/
-if (!searchController.headedBackToBase && !giveControlToDropOffController && searchController.getState() != SearchController::SETTING_INITIAL_HEADING && !headedToBaseOverwriteAll)
-{
-//adjust the angle
-searchController.petalTheta = modMyAngle(searchController.petalTheta + SearchController::petalAngleIncrement);
-print((float)(searchController.petalTheta));
-//set it back and go
-sendDriveCommand(0,0);
-searchController.headedBackToBase = false;
-geometry_msgs::Pose2D tempLocation = stevenSearch();
-setDestination(tempLocation.x,tempLocation.y);
-}
-
-
 }
 
 /*************************
@@ -1090,13 +1062,15 @@ if (countLeft > 0 || countRight > 0)
 {
 dropOffController.setDataTargets(countLeft,countRight);//has the number of left and right 256 tags (the base tags)
 
-        if (centerSeen)
+        if (centerSeen && headedToBaseOverwriteAll)
 		doHitTheBaseCode();
 
 	//to avoid the center blocks if they are considered an obstacle
-	/*if (!giveControlToDropOffController)
+	if (!giveControlToDropOffController)
 		driveOnTimer(0.05,0.55,1);
-	*/
+	
+	continueInterruptedSearch();
+
 
 	//note that cubes inside or around the base should not be grabbed
 
