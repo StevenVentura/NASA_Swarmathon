@@ -19,6 +19,7 @@ checkedOnce = false;
 state = FIXING_CAMERA;
 blockBlock = false;
 openCVThinksCubeIsHeld = false;
+result.foundACluster = false;
 
 }
 
@@ -262,9 +263,12 @@ PickUpResult PickUpController::selectTarget(const apriltags_ros::AprilTagDetecti
   
     nTargetsSeen = 0;
     nTargetsSeen = message->detections.size();
+result.foundACluster = false;
 
     double closest = std::numeric_limits<double>::max();//Double.MAX_VALUE
     int target  = 0;
+if (message->detections.size() > 1)
+	result.foundACluster = true;
     for (int i = 0; i < message->detections.size(); i++) //this loop selects the closest visible block to makes goals for it
     {
         geometry_msgs::PoseStamped tagPose = message->detections[i].pose;
@@ -294,6 +298,7 @@ openCVThinksCubeIsHeld = true;
 //so mobility.cpp can save the snapshot of block distance and yaw error
 result.blockDist = blockDist;
 result.blockYawError = blockYawError;
+
     
 
     return result;

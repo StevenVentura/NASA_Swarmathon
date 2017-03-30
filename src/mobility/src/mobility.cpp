@@ -716,7 +716,6 @@ else
 sendDriveCommand(0.05,0.35);
 searchController.accumulatedAngle += fabs(currentLocation.theta - searchController.lastAngle);
 searchController.lastAngle = currentLocation.theta;
-print(searchController.accumulatedAngle);
 }
 
 
@@ -1064,6 +1063,19 @@ if (!giveControlToPickupController)
 	print("GIVING CONTROL TO PICKUP CONTROLLER");
 
 result = pickUpController.selectTarget(message);
+if (!giveControlToPickupController)
+{
+if (result.foundACluster == true)
+{
+print("FOUND A CLUSTER XD XD XD XD XD XD XD XD XD XD XD XD XD ");
+searchController.comeBackToCluster = true;
+searchController.clusterLocation.x = currentLocation.x + 0.5*cos(currentLocation.theta);
+searchController.clusterLocation.y = currentLocation.y + 0.5*sin(currentLocation.theta);
+
+}
+else
+searchController.comeBackToCluster = false;
+}
 if (!giveControlToPickupController)//this code runs once per "state change"
 {
 	//because sometimes its still avoiding an obstacle or something but then it sees the block and it forgets to fix the angle after it finishes doing drive on timer

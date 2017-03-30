@@ -15,6 +15,7 @@ struct PickUpResult {
 float blockDist;
 float blockYawError;
 float debug;
+bool foundACluster;
 };
 
 class PickUpController

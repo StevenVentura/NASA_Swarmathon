@@ -31,6 +31,8 @@ int getState(){return state;}
 void setState(int s){state=s;}
 
 geometry_msgs::Pose2D clusterLocation;
+bool comeBackToCluster;
+
 float lastAngle, accumulatedAngle;
 
 
