@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+/home/steven/rover_workspace/src/sbridge/src/main.cpp
+signal.h
+-
+sbridge.h
+/home/steven/rover_workspace/src/sbridge/src/sbridge.h
+
 /home/steven/rover_workspace/src/sbridge/src/sbridge.cpp
 sbridge.h
 /home/steven/rover_workspace/src/sbridge/src/sbridge.h

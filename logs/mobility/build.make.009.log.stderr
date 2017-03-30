@@ -1,14 +1,17 @@
-/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void mapAverage()’:
-/home/steven/rover_workspace/src/mobility/src/mobility.cpp:1190:9: error: ‘init’ was not declared in this scope
-     if (init) {
-         ^
-/home/steven/rover_workspace/src/mobility/src/mobility.cpp:1190:9: note: suggested alternative:
-In file included from /opt/ros/indigo/include/ros/node_handle.h:46:0,
-                 from /opt/ros/indigo/include/ros/ros.h:45,
-                 from /home/steven/rover_workspace/src/mobility/src/mobility.cpp:1:
-/opt/ros/indigo/include/ros/init.h:103:18: note:   ‘ros::init’
- ROSCPP_DECL void init(const VP_string& remapping_args, const std::string& name, uint32_t options = 0);
-                  ^
-make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+In file included from /home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:1:0:
+/home/steven/rover_workspace/src/mobility/src/PickUpController.h:26:52: error: ‘geometry_msgs::Pose2D’ has not been declared
+   PickUpResult pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation);
+                                                    ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:48:68: error: ‘PickUpResult PickUpController::pickUpSelectedTarget’ is not a static member of ‘class PickUpController’
+ PickUpResult PickUpController::pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation) {
+                                                                    ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:48:53: error: ‘Pose2D’ is not a member of ‘geometry_msgs’
+ PickUpResult PickUpController::pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation) {
+                                                     ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:48:92: error: expected ‘,’ or ‘;’ before ‘{’ token
+ PickUpResult PickUpController::pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation) {
+                                                                                            ^
+make[2]: *** [CMakeFiles/mobility.dir/src/PickUpController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
 make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
 make: *** [all] Error 2

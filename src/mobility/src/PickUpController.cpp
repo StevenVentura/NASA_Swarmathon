@@ -6,15 +6,18 @@ PickUpController::PickUpController() {
     blockDist = 0;
     td = 0;
 
+
     result.pickedUp = false;
     result.cmdVel = 0;
     result.angleError = 0;
     result.fingerAngle = -1;
     result.wristAngle = -1;
-    result.giveUp = false;
 result.debug = 0;
 
+checkedOnce = false;
+
 state = FIXING_CAMERA;
+blockBlock = false;
 openCVThinksCubeIsHeld = false;
 
 }
@@ -44,37 +47,8 @@ the pickupcontroller is responsible for providing instructions on how to move th
 
 
 
-PickUpResult PickUpController::pickUpSelectedTarget(bool blockBlock) {
+PickUpResult PickUpController::pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation) {
 result.debug = 0;
-
-/*
-variables i have to work with:
-
-inputs:
-  blockDist
-  blockYawError
-  nTargetsSeen (if it so happens that the thread sent that before between function calls)
-  blockBlock
-  thereIsAReallyCloseBlock //close to the camera using openCV
-
-if (hypot(hypot(tagPose.pose.position.x, tagPose.pose.position.y), tagPose.pose.position.z) < 0.13 && Td < 3.8) {
-        result.pickedUp = true;
-    }
-
-outputs:
-struct PickUpResult{
-  float cmdVel;//the speed to move robot after this loop
-  float angleError;//the angle to move robot after this loop
-  float fingerAngle;//has  control over wrist and finger of the claw
-  float wristAngle;
-  bool pickedUp;//this pretty much signals the end of the program
-  bool giveUp;//may or may not use this
-};
-stuff he made up that i might not use:
-lockTarget
-timeOut
-vel = blockDist * 0.20 (clamps it to [0.10, 0.20])
-*/
 
 
 //this means dont change these until they are set to something
@@ -90,7 +64,69 @@ switch(state) {
 
 //put target in center of camera
 case (FIXING_CAMERA):
-//do nothing! this is handled in mobility now!
+{
+float myAngle;
+float goodAngle;
+float twopi = 2*3.1415926535;
+float pi = twopi / 2;
+float tolerance = 0.030;
+
+myAngle = currentLocation.theta;
+goodAngle = correctAngleBearingToPickUpCube;
+while(myAngle < 0)
+	myAngle = myAngle + twopi;
+while (myAngle > twopi)
+	myAngle = myAngle - twopi;
+while (goodAngle < 0)
+	goodAngle = goodAngle + twopi;
+while (goodAngle > twopi)
+	goodAngle = goodAngle - twopi;
+
+
+
+float blockYawError = myAngle - goodAngle;
+if (blockYawError < 0)
+{
+while (blockYawError < -pi)
+	blockYawError = blockYawError + twopi;
+}
+else if (blockYawError > 0)
+{
+while(blockYawError > pi)
+	blockYawError = blockYawError - twopi;
+
+}
+		if (blockYawError > tolerance)
+		   result.angleError = 0.275;	
+		else if (blockYawError < -tolerance)
+		   result.angleError = -0.275;
+		else //if its good!
+		{
+			result.angleError = 0;
+			if (checkedOnce == true)
+				setState(APPROACHING_CUBE);
+			else
+				setState(WAITING_AND_CHECKING_CAMERA_AGAIN);//steven version of PID
+			omniTimerStartingTime = ros::Time::now();
+		}
+		result.cmdVel = 0;
+		result.fingerAngle = FINGERS_OPEN;
+		result.wristAngle = WRIST_DOWN;
+}//end case FIXING_CAMERA
+break;
+case (WAITING_AND_CHECKING_CAMERA_AGAIN):
+duration = 1.0;
+timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
+{
+//do nothing
+}
+else
+{
+checkedOnce = true;
+setState(FIXING_CAMERA);
+}
+
 break;
 
 //walk to the cube on a timer
@@ -102,7 +138,8 @@ break;
 26 inches = 0.654 = bad pickup (too short)
 */
 case (APPROACHING_CUBE):
-timeToEnsureStraightening = 0;
+checkedOnce = false;
+timeToEnsureStraightening = 0.75;
 duration = 2.5 * (distanceToBlockUponFirstSight / 0.320) + timeToEnsureStraightening;
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
@@ -123,8 +160,6 @@ case (PICKING_UP_CUBE):
 
 // close fingers
 result.fingerAngle = 0;
-
-
 
 omniTimerStartingTime = ros::Time::now();//reset the timer again
 state = WAIT_BEFORE_RAISING_WRIST;
@@ -166,7 +201,7 @@ break;
 
 case(PICKUP_FAILED_BACK_UP):
 
-duration = 1.75;
+duration = 2.25;
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
@@ -189,6 +224,7 @@ state = DONE_FAILING;
 break;
 
 case (DONE_SUCCESS):
+result.wristAngle = WRIST_CARRY;
 result.pickedUp = true;//mobility.cpp looks for this flag
 state = DONE_SUCCESS;
 break;
@@ -262,7 +298,7 @@ result.blockYawError = blockYawError;
 
 void PickUpController::reset() {
     result.pickedUp = false;
-
+checkedOnce = false;
 state = FIXING_CAMERA;
 
     nTargetsSeen = 0;
@@ -271,13 +307,13 @@ state = FIXING_CAMERA;
     td = 0;
 openCVThinksCubeIsHeld = false;
 
+blockBlock = false;
 
     result.pickedUp = false;
     result.cmdVel = 0;
     result.angleError = 0;
     result.fingerAngle = -1;
     result.wristAngle = -1;
-    result.giveUp = false;
 
 
 }

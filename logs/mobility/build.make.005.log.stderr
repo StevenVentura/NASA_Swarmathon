@@ -1,0 +1,12 @@
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp: In constructor ‘PickUpController::PickUpController()’:
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:8:1: error: ‘blockBlock’ was not declared in this scope
+ blockBlock = false;
+ ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp: In member function ‘void PickUpController::reset()’:
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:273:1: error: ‘blockBlock’ was not declared in this scope
+ blockBlock = false;
+ ^
+make[2]: *** [CMakeFiles/mobility.dir/src/PickUpController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

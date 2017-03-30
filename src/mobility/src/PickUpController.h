@@ -3,6 +3,7 @@
 #define HEADERFILE_H
 #include <apriltags_ros/AprilTagDetectionArray.h>
 #include <ros/ros.h>
+#include <geometry_msgs/Pose2D.h>
 
 struct PickUpResult {
   float cmdVel;
@@ -10,7 +11,6 @@ struct PickUpResult {
   volatile float fingerAngle;
   volatile float wristAngle;
   bool pickedUp;
-  bool giveUp;
 float blockDist;
 float blockYawError;
 float debug;
@@ -19,11 +19,12 @@ float debug;
 class PickUpController
 {
  public:
+  bool blockBlock;
   PickUpController();
   ~PickUpController();
 
   PickUpResult selectTarget(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message);
-  PickUpResult pickUpSelectedTarget(bool blockBlock);
+  PickUpResult pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation);
 
   float getDist() {return blockDist;}
   bool getLockTarget() {return lockTarget;}
@@ -31,19 +32,34 @@ class PickUpController
 void setDistanceToBlockUponFirstSight(float pls,float ok) {distanceToBlockUponFirstSight = pls; yawErrorToBlockUponFirstSight = ok;}
 
 int getState() {return state;}
+void setState(int s){state = s;}
+
+//for PID
+bool checkedOnce;
 
   void reset();
-const static int FIXING_CAMERA=0, APPROACHING_CUBE=1, PICKING_UP_CUBE=2,VERIFYING_PICKUP=3,PICKUP_FAILED_BACK_UP=4,DONE_FAILING=5,DONE_SUCCESS=6,WAIT_BEFORE_RAISING_WRIST=7;
+const static int FIXING_CAMERA=0, APPROACHING_CUBE=1, PICKING_UP_CUBE=2,VERIFYING_PICKUP=3,PICKUP_FAILED_BACK_UP=4,DONE_FAILING=5,
+		DONE_SUCCESS=6,WAIT_BEFORE_RAISING_WRIST=7,WAITING_AND_CHECKING_CAMERA_AGAIN=8;
 volatile int state;
+
+std::string getStateName() {
+const std::string stateNames[] = {"FIXING_CAMERA", "APPROACHING_CUBE", "PICKING_UP_CUBE","VERIFYING_PICKUP", "PICKUP_FAILED_BACK_UP","DONE_FAILING",
+		"DONE_SUCCESS","WAIT_BEFORE_RAISING_WRIST","WAITING_AND_CHECKING_CAMERA_AGAIN"};
+return stateNames[getState()];
+}
+
 
 const static float FINGERS_OPEN = M_PI_2;
 const static float FINGERS_CLOSED = 0;
 const static float WRIST_UP = 0;
 const static float WRIST_DOWN = 1.25;
+const static float WRIST_CARRY = 0.80;
 
 //this is set when you first switch to "state_pickup"
 float distanceToBlockUponFirstSight;
 float yawErrorToBlockUponFirstSight;
+//yeah
+float correctAngleBearingToPickUpCube;
 
 
 

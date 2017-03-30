@@ -1,7 +1,131 @@
-/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void mobilityStateMachine(const ros::TimerEvent&)’:
-/home/steven/rover_workspace/src/mobility/src/mobility.cpp:261:24: error: no match for call to ‘(ros::Publisher) (std_msgs::String&)’
- stevenPublish(stevenMsg);
-                        ^
-make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp: In member function ‘PickUpResult PickUpController::pickUpSelectedTarget()’:
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:100:11: error: ‘currentLocation’ was not declared in this scope
+ myAngle = currentLocation.theta;
+           ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:101:13: error: ‘pickUpController’ was not declared in this scope
+ goodAngle = pickUpController.correctAngleBearingToPickUpCube;
+             ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:147:23: error: jump to case label [-fpermissive]
+ case (APPROACHING_CUBE):
+                       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:113:7: error:   crosses initialization of ‘float blockYawError’
+ float blockYawError = myAngle - goodAngle;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:98:7: error:   crosses initialization of ‘float tolerance’
+ float tolerance = 0.05;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:97:7: error:   crosses initialization of ‘float pi’
+ float pi = twopi / 2;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:96:7: error:   crosses initialization of ‘float twopi’
+ float twopi = 2*3.1415926535;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:165:22: error: jump to case label [-fpermissive]
+ case (PICKING_UP_CUBE):
+                      ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:113:7: error:   crosses initialization of ‘float blockYawError’
+ float blockYawError = myAngle - goodAngle;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:98:7: error:   crosses initialization of ‘float tolerance’
+ float tolerance = 0.05;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:97:7: error:   crosses initialization of ‘float pi’
+ float pi = twopi / 2;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:96:7: error:   crosses initialization of ‘float twopi’
+ float twopi = 2*3.1415926535;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:177:32: error: jump to case label [-fpermissive]
+ case (WAIT_BEFORE_RAISING_WRIST):
+                                ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:113:7: error:   crosses initialization of ‘float blockYawError’
+ float blockYawError = myAngle - goodAngle;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:98:7: error:   crosses initialization of ‘float tolerance’
+ float tolerance = 0.05;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:97:7: error:   crosses initialization of ‘float pi’
+ float pi = twopi / 2;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:96:7: error:   crosses initialization of ‘float twopi’
+ float twopi = 2*3.1415926535;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:192:23: error: jump to case label [-fpermissive]
+ case (VERIFYING_PICKUP):
+                       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:113:7: error:   crosses initialization of ‘float blockYawError’
+ float blockYawError = myAngle - goodAngle;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:98:7: error:   crosses initialization of ‘float tolerance’
+ float tolerance = 0.05;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:97:7: error:   crosses initialization of ‘float pi’
+ float pi = twopi / 2;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:96:7: error:   crosses initialization of ‘float twopi’
+ float twopi = 2*3.1415926535;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:210:27: error: jump to case label [-fpermissive]
+ case(PICKUP_FAILED_BACK_UP):
+                           ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:113:7: error:   crosses initialization of ‘float blockYawError’
+ float blockYawError = myAngle - goodAngle;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:98:7: error:   crosses initialization of ‘float tolerance’
+ float tolerance = 0.05;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:97:7: error:   crosses initialization of ‘float pi’
+ float pi = twopi / 2;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:96:7: error:   crosses initialization of ‘float twopi’
+ float twopi = 2*3.1415926535;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:229:19: error: jump to case label [-fpermissive]
+ case (DONE_FAILING):
+                   ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:113:7: error:   crosses initialization of ‘float blockYawError’
+ float blockYawError = myAngle - goodAngle;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:98:7: error:   crosses initialization of ‘float tolerance’
+ float tolerance = 0.05;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:97:7: error:   crosses initialization of ‘float pi’
+ float pi = twopi / 2;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:96:7: error:   crosses initialization of ‘float twopi’
+ float twopi = 2*3.1415926535;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:234:19: error: jump to case label [-fpermissive]
+ case (DONE_SUCCESS):
+                   ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:113:7: error:   crosses initialization of ‘float blockYawError’
+ float blockYawError = myAngle - goodAngle;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:98:7: error:   crosses initialization of ‘float tolerance’
+ float tolerance = 0.05;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:97:7: error:   crosses initialization of ‘float pi’
+ float pi = twopi / 2;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:96:7: error:   crosses initialization of ‘float twopi’
+ float twopi = 2*3.1415926535;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:241:1: error: jump to case label [-fpermissive]
+ default:
+ ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:113:7: error:   crosses initialization of ‘float blockYawError’
+ float blockYawError = myAngle - goodAngle;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:98:7: error:   crosses initialization of ‘float tolerance’
+ float tolerance = 0.05;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:97:7: error:   crosses initialization of ‘float pi’
+ float pi = twopi / 2;
+       ^
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:96:7: error:   crosses initialization of ‘float twopi’
+ float twopi = 2*3.1415926535;
+       ^
+make[2]: *** [CMakeFiles/mobility.dir/src/PickUpController.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
 make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
 make: *** [all] Error 2

@@ -28,6 +28,12 @@ int getCountRight(){return countRight;}
 ros::Time omniTimerStartingTime;
 ros::Time lastTimeISawTheCenterBase;
 
+std::string getStateName() {
+const std::string stateNames[] = {"FINDING_BASE","ADJUSTING_ANGLE_FOR_ENTRY","ENTERING_BASE","DROPPING_CUBE","BACKING_OUT_OF_BASE","DONE_DROPPING_OFF"
+		,"PAUSING_BEFORE_ROTATING_AGAIN","SCOOTING_CLOSER_TO_BASE"};
+
+}
+
 const static float FINGERS_OPEN = M_PI_2;
 const static float FINGERS_CLOSED = 0;
 const static float WRIST_UP = 0;

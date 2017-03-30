@@ -5,7 +5,11 @@ CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /home/steven/rover_workspac
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /home/steven/rover_workspace/src/mobility/src/DropOffController.h
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/XmlRpcDecl.h
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/XmlRpcValue.h
+CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/geometry_msgs/Point.h
+CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/geometry_msgs/Pose.h
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/geometry_msgs/Pose2D.h
+CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/geometry_msgs/PoseStamped.h
+CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/geometry_msgs/Quaternion.h
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/ros/advertise_options.h
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/ros/advertise_service_options.h
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/ros/assert.h
@@ -61,6 +65,7 @@ CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/ros
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/ros/wall_timer_options.h
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/rosconsole/macros_generated.h
 CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/std_msgs/Float32.h
+CMakeFiles/mobility.dir/src/DropOffController.cpp.o: /opt/ros/indigo/include/std_msgs/Header.h
 
 CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /home/steven/rover_workspace/src/mobility/src/PickUpController.cpp
 CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /home/steven/rover_workspace/src/mobility/src/PickUpController.h
@@ -70,6 +75,7 @@ CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /opt/ros/indigo/include/apri
 CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /opt/ros/indigo/include/apriltags_ros/AprilTagDetectionArray.h
 CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /opt/ros/indigo/include/geometry_msgs/Point.h
 CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /opt/ros/indigo/include/geometry_msgs/Pose.h
+CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /opt/ros/indigo/include/geometry_msgs/Pose2D.h
 CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /opt/ros/indigo/include/geometry_msgs/PoseStamped.h
 CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /opt/ros/indigo/include/geometry_msgs/Quaternion.h
 CMakeFiles/mobility.dir/src/PickUpController.cpp.o: /opt/ros/indigo/include/ros/advertise_options.h

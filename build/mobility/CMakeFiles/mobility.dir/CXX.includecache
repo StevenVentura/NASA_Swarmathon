@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+/home/steven/rover_workspace/src/mobility/src/DropOffController.cpp
+DropOffController.h
+/home/steven/rover_workspace/src/mobility/src/DropOffController.h
+geometry_msgs/PoseStamped.h
+-
+
 /home/steven/rover_workspace/src/mobility/src/DropOffController.h
 geometry_msgs/Pose2D.h
 -
@@ -14,10 +20,16 @@ std_msgs/Float32.h
 ros/ros.h
 -
 
+/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp
+PickUpController.h
+/home/steven/rover_workspace/src/mobility/src/PickUpController.h
+
 /home/steven/rover_workspace/src/mobility/src/PickUpController.h
 apriltags_ros/AprilTagDetectionArray.h
 -
 ros/ros.h
+-
+geometry_msgs/Pose2D.h
 -
 
 /home/steven/rover_workspace/src/mobility/src/SearchController.h

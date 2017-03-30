@@ -40,10 +40,6 @@ SearchController searchController;
 
 // Mobility Logic Functions
 void sendDriveCommand(double linearVel, double angularVel);
-void openFingers(); // Open fingers to 90 degrees
-void closeFingers();// Close fingers to 0 degrees
-void raiseWrist();  // Return wrist back to 0 degrees
-void lowerWrist();  // Lower wrist to 50 degrees
 void mapAverage();  // constantly averages last 100 positions from map
 
 void continueInterruptedSearch();
@@ -53,7 +49,6 @@ void setDestinationAngular(float angle, float distance);
 void doPickupControllerMovements();
 void resetPickUpController();
 void resetDropOffController();
-geometry_msgs::Pose2D stevenSearch();
 
 void print(string str);
 void print(float f);
@@ -75,7 +70,6 @@ const float WRIST_DOWN = 1.25;
 geometry_msgs::Pose2D goalLocation;//the location of the next place he is told to go to
 geometry_msgs::Pose2D origin;//the location of the dropoff collection point base
 geometry_msgs::Pose2D startingLocation;//steven variable, used for calculating distance travelled in linear travel objectives
-bool alreadyFinishedSettingTheAngleHeading = false;//only 1 time
 
 const static float NAVIGATION_ACCURACY = 0.25;//this many meters radius within specified location navigation
 
@@ -85,28 +79,11 @@ geometry_msgs::Pose2D centerLocation;
 geometry_msgs::Pose2D centerLocationMap;
 geometry_msgs::Pose2D centerLocationOdom;
 
-int currentMode = 0;
-float mobilityLoopTimeStep = 0.1; // time between the mobility loop calls
-float status_publish_interval = 1;
+int currentMode = 0;//this refers to the "automatic" or "manual" setting on the GUI. 0 and 1 are manual, and 2 and 3 are automatic.
 
-// Set true when the target block is less than targetDist so we continue
-// attempting to pick it up rather than switching to another block in view.
-bool lockTarget = false;
+const float mobilityLoopTimeStep = 0.1; // time between the mobility loop calls
+const float status_publish_interval = 1;
 
-// Failsafe state. No legitimate behavior state. If in this state for too long
-// return to searching as default behavior.
-bool timeOut = false;
-
-// Set to true when the center ultrasound reads less than 0.14m. Usually means
-// a picked up cube is in the way.
-bool blockBlock = false;
-
-// central collection point has been seen (aka the nest)
-bool centerSeen = false;
-
-// Set true when we are insie the center circle and we need to drop the block,
-// back out, and reset the boolean cascade.
-bool reachedCollectionPoint = false;
 
 // used for calling code once but not in main
 volatile bool initRun = true;
@@ -115,9 +92,6 @@ volatile bool initRun = true;
 volatile bool headedToBaseOverwriteAll = false;
 volatile bool giveControlToDropOffController = false;
 volatile bool giveControlToPickupController = false;
-
-//more compplicated loop control variables
-float correctAngleBearingToPickUpCubePickUpController;
 
 
 // used to remember place in mapAverage array
@@ -129,22 +103,10 @@ const unsigned int mapHistorySize = 500;
 // An array in which to store map positions
 geometry_msgs::Pose2D mapLocation[mapHistorySize];
 
-bool avoidingObstacle = false;
 
-//steven code
-//float searchVelocity = 0.0;
 float searchVelocity = 0.2; // meters/second
 
 std_msgs::String msg;
-
-// state machine states
-#define STATE_MACHINE_TRANSFORM (0)
-//literally removed rotate
-//literally removed skid_steer
-//removed state_machine_pickup and replaced with variable giveControlToPickupController. this code now runs inside transform.
-//dropoff gone
-//removed backup
-int stateMachineState = STATE_MACHINE_TRANSFORM;
 
 geometry_msgs::Twist velocity;
 char host[128];
@@ -177,7 +139,7 @@ time_t timerStartTime;
 
 // An initial delay to allow the rover to gather enough position data to 
 // average its location.
-unsigned int startDelayInSeconds = 1;
+const unsigned int startDelayInSeconds = 1;
 float timerTimeElapsed = 0;
 
 //Transforms
@@ -203,10 +165,6 @@ int main(int argc, char **argv) {
 
     // instantiate random number generator
     rng = new random_numbers::RandomNumberGenerator();
-
-
-
-
 
     centerLocation.x = 0;//i dont use this stuff really
     centerLocation.y = 0;
@@ -290,15 +248,7 @@ Parameters:
     return EXIT_SUCCESS;
 }
 
-float modMyAngle(float angle)
-{
-while (angle > 2*3.14159)
-angle -= 2*3.14159;
-while (angle < -2*3.14159)
-angle += 2*3.14159;
-}
-
-void initializeStuff()
+void resetClaw()
 {
 std_msgs::Float32 fingerAngle,wristAngle;
 fingerAngle.data = 0; wristAngle.data = 0;
@@ -308,17 +258,20 @@ fingerAngle.data = 0; wristAngle.data = 0;
     wristAnglePublish.publish(wristAngle);
 
 
+}
+
+void initializeStuff()
+{
+resetClaw();
+
+
 searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 
 //the origin is supposed to be like 50cm in front of him
 origin.x = currentLocation.x + 0.50 * cos(currentLocation.theta);
 origin.y = currentLocation.y + 0.50 * sin(currentLocation.theta);
-//set the initial petal
-searchController.petalTheta = modMyAngle(currentLocation.theta + 3.1415926535);
-searchController.petalLength = 2;
 
-setDestination(currentLocation.x + searchController.petalLength * cos(searchController.petalTheta), 
-	currentLocation.y + searchController.petalLength * sin(searchController.petalTheta));
+setDestination(origin.x,origin.y);
 print("done initializing");
 }
 
@@ -344,7 +297,6 @@ goalLocation.theta = atan2(y - currentLocation.y, x - currentLocation.x);
 //reaching the goal control variables: used in bool travelledFarEnough & stuff
 startingLocation.x = currentLocation.x;
 startingLocation.y = currentLocation.y;
-alreadyFinishedSettingTheAngleHeading = false;
 searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 //now let the state machine go back to doing the navigating as before.
 }
@@ -400,7 +352,7 @@ void doPickupControllerMovements()
 if (pickUpController.getState() == pickUpController.DONE_FAILING)
 {
 resetPickUpController();
-geometry_msgs::Pose2D tempLocation = stevenSearch();
+geometry_msgs::Pose2D tempLocation = searchController.search(currentLocation);
 setDestination(tempLocation.x,tempLocation.y);
 return;
 }
@@ -409,64 +361,7 @@ return;
 
 PickUpResult result;
 
-                result = pickUpController.pickUpSelectedTarget(blockBlock);
-	if (pickUpController.getState() == pickUpController.FIXING_CAMERA)
-		{
-		//THIS STATE is handled in mobility because i dont have enough control over it inside pickupcontroller.cpp
-
-
-//		float blockYawError = currentLocation.theta - correctAngleBearingToPickUpCubePickUpController;
-float myAngle;
-float goodAngle;
-float twopi = 2*3.1415926535;
-float pi = twopi / 2;
-float tolerance = 0.05;
-
-myAngle = currentLocation.theta;
-goodAngle = correctAngleBearingToPickUpCubePickUpController;
-while(myAngle < 0)
-	myAngle = myAngle + twopi;
-while (myAngle > twopi)
-	myAngle = myAngle - twopi;
-while (goodAngle < 0)
-	goodAngle = goodAngle + twopi;
-while (goodAngle > twopi)
-	goodAngle = goodAngle - twopi;
-
-
-
-float blockYawError = myAngle - goodAngle;
-if (blockYawError < 0)
-{
-while (blockYawError < -pi)
-	blockYawError = blockYawError + twopi;
-}
-else if (blockYawError > 0)
-{
-while(blockYawError > pi)
-	blockYawError = blockYawError - twopi;
-
-}
-
-
-		if (blockYawError > tolerance)
-		   result.angleError = 0.275;	
-		else if (blockYawError < -tolerance)
-		   result.angleError = -0.275;
-		else //if its good!
-		{
-			result.angleError = 0;
-			pickUpController.state = pickUpController.APPROACHING_CUBE;
-			pickUpController.omniTimerStartingTime = ros::Time::now();
-		}
-		result.fingerAngle = FINGERS_OPEN;
-		result.wristAngle = WRIST_DOWN;
-
-		}//end STATE FIXING_CAMERA
-
-
-const string stateNames[] = {"FIXING_CAMERA", "APPROACHING_CUBE", "PICKING_UP_CUBE","VERIFYING_PICKUP", "PICKUP_FAILED_BACK_UP","DONE_FAILING","DONE_SUCCESS","WAIT_BEFORE_RAISING_WRIST"};
-
+                result = pickUpController.pickUpSelectedTarget(currentLocation);
 
 if (result.angleError != 0 && result.cmdVel == 0)
 	sendDriveCommand(0.05,-1*result.angleError);
@@ -486,12 +381,7 @@ else
                     wristAngle.data = result.wristAngle;
 		    wristAnglePublish.publish(wristAngle);
                 }
-		//rip
-                if (result.giveUp) {
-			print("giving up!! D::: lol ");
-                    sendDriveCommand(0,0);
-                    resetPickUpController();
-                }
+		
 		//got da cube! time 2 bring it home~
                 if (result.pickedUp) {
                     resetPickUpController();
@@ -503,11 +393,8 @@ else
 headedToBaseOverwriteAll = true;
 setDestination(origin.x, origin.y);
 giveControlToPickupController = false;
-                    
-		// lower wrist to avoid ultrasound sensors
-                    std_msgs::Float32 angle;
-                    angle.data = 0.8;
-                    wristAnglePublish.publish(angle);
+wristAngle.data = 0.80;
+wristAnglePublish.publish(wristAngle);
 
                     return;
                 }
@@ -521,9 +408,8 @@ giveControlToPickupController = false;
 void doDropOffControllerMovements()
 {
 //state machine is handled in here
-const string stateNames[] = {"FINDING_BASE","ADJUSTING_ANGLE_FOR_ENTRY","ENTERING_BASE","DROPPING_CUBE","BACKING_OUT_OF_BASE","DONE_DROPPING_OFF"
-		,"PAUSING_BEFORE_ROTATING_AGAIN","SCOOTING_CLOSER_TO_BASE"};
-print(stateNames[dropOffController.getState()]);
+
+print(dropOffController.getStateName());
 const int countLeft = dropOffController.getCountLeft();
 const int countRight = dropOffController.getCountRight();
 
@@ -610,7 +496,7 @@ else
 break;
 
 case (DropOffController::PAUSING_BEFORE_ROTATING_AGAIN):
-duration = 2.0;
+duration = 1.5;
 timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
 ;//wait
@@ -711,29 +597,6 @@ float currentDistanceFromStart = hypot(startingLocation.x - currentLocation.x, s
 return (currentDistanceFromStart / distanceFromStartToFinish) >= percentageTravelCounter;
 }
 
-//void search
-geometry_msgs::Pose2D stevenSearch() {
-  
-geometry_msgs::Pose2D goalLocation;
-
-
-if (searchController.headedBackToBase)
-{
-goalLocation.x = origin.x;
-goalLocation.y = origin.y;
-}
-else
-{
-searchController.petalTheta += SearchController::petalAngleIncrement;
-
-//select new position!
-goalLocation.x = origin.x + searchController.petalLength * cos(searchController.petalTheta);
-goalLocation.y = origin.y + searchController.petalLength * sin(searchController.petalTheta);
-}
-
-  return goalLocation;
-}
-
 void doFreeMovementStuff()
 {
 float rotateOnlyAngleTolerance = 0.10;
@@ -827,18 +690,18 @@ searchController.setState(SearchController::REACHED_GOAL);
 break;
 
 case (SearchController::REACHED_GOAL):
+searchController.setState(SearchController::REACHED_GOAL);
 
-//searchController.setState(SearchController::REACHED_GOAL);
+//choose a new heading if we have none!        
 
 print("picking new destination");
 geometry_msgs::Pose2D tempLocation;
-searchController.headedBackToBase = !searchController.headedBackToBase;
-tempLocation = stevenSearch();
+if (travelledFarEnough())
+	tempLocation = searchController.search(goalLocation);
+else
+	tempLocation = searchController.search(currentLocation);
 
-
-setDestination(tempLocation.x, tempLocation.y);
-
-
+  setDestination(tempLocation.x,tempLocation.y);
 
 
 break;
@@ -880,24 +743,17 @@ return;
     // Robot is in automode
     if (currentMode == 2 || currentMode == 3) {
 
+stateMachineMsg.data = "TRANSFORMING";
 
-
-        // Select rotation or translation based on required adjustment
-        switch(stateMachineState) {
-
-        // If no adjustment needed, select new goal
-        case STATE_MACHINE_TRANSFORM: {
-            stateMachineMsg.data = "TRANSFORMING";
-
-
+      
 
 if (giveControlToPickupController == true)
 {
 doPickupControllerMovements();
 }
 
-//really needing to do a clean surgery replacement of this if() with dropoff controller variable. But avoidingObstacle is important/unhandled right now
-if (giveControlToDropOffController)// && !avoidingObstacle)
+//really needing to do a clean surgery replacement of this if() with dropoff controller variable.
+if (giveControlToDropOffController)
 {
 doDropOffControllerMovements();
 }
@@ -913,19 +769,9 @@ if (isDoingDriveOnTimer)
 doDriveOnTimerStuff();
 }
 
-		break;
- 	 }//end case_transform
-
-///////////////////////////////////////////////////////////////
-        
 	
-        default: {
-            break;
-        }
-
-        } /* end of switch() */
     }
-    // mode is NOT auto
+    //else mode is NOT auto
     else {
         // publish current state for the operator to see
         stateMachineMsg.data = "WAITING";
@@ -995,8 +841,7 @@ setDestination(origin.x, origin.y);
 else
 {
 print("collision found. changing route");
-//if we are seeing base
-geometry_msgs::Pose2D tempLocation = stevenSearch();
+geometry_msgs::Pose2D tempLocation = searchController.search(currentLocation);
 setDestination(tempLocation.x,tempLocation.y);
 }
 
@@ -1021,19 +866,19 @@ giveControlToDropOffController = true;
 
 
 
-//this is called if it sees either a Base tag, or a Cube tag. the first half of the code here handles Base tag and returns.
+//this callback is called ONLY if it sees either a Base tag, or a Cube tag. the first half of the code here handles Base tag and returns.
 void targetHandler(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message) {
 
-    // If in manual mode do not try to automatically pick up the target
+    //return if in manual mode
     if (currentMode == 1 || currentMode == 0)
         return;
 
-    // if a target is detected and we are looking for center tags
+    //if any tag is detected (this is always true right? lol)
     if (message->detections.size() > 0) 
 {
+bool centerSeen = false;
         float cameraOffsetCorrection = 0.020; //meters;
 
-        centerSeen = false;
         int countRight = 0;
         int countLeft = 0;
 
@@ -1054,8 +899,6 @@ void targetHandler(const apriltags_ros::AprilTagDetectionArray::ConstPtr& messag
                 centerSeen = true;
             }//end if 256
         }//end for
-
-
 
 //dropoff tag stuff
 if (countLeft > 0 || countRight > 0)
@@ -1096,7 +939,7 @@ if (!giveControlToPickupController)//this code runs once per "state change"
 	//its a snapshot
 	pickUpController.setDistanceToBlockUponFirstSight(result.blockDist,result.blockYawError);
 	//corrects the angle, first, inside of mobility.cpp in the pickup area.
-	correctAngleBearingToPickUpCubePickUpController = currentLocation.theta - result.blockYawError;
+	pickUpController.correctAngleBearingToPickUpCube = currentLocation.theta - result.blockYawError;
 }
 
 if (!giveControlToPickupController)
@@ -1172,9 +1015,7 @@ driveOnTimer(0.05,0.55,1.0);
 
     // the front ultrasond is blocked very closely. 0.14m currently. this is very important code as it tells us when the block has been picked up.
     if (message->data == 4) {
-        blockBlock = true;
-    } else {
-        blockBlock = false;
+        pickUpController.blockBlock = true;
     }
 }
 

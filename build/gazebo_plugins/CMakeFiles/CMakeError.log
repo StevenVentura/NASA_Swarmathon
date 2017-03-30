@@ -1,21 +1,21 @@
 Determining if the pthread_create exist failed with the following output:
 Change Dir: /home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp
 
-Run Build Command:/usr/bin/make "cmTryCompileExec3846683181/fast"
-/usr/bin/make -f CMakeFiles/cmTryCompileExec3846683181.dir/build.make CMakeFiles/cmTryCompileExec3846683181.dir/build
+Run Build Command:/usr/bin/make "cmTryCompileExec972242273/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec972242273.dir/build.make CMakeFiles/cmTryCompileExec972242273.dir/build
 make[1]: Entering directory `/home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp'
 /usr/bin/cmake -E cmake_progress_report /home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp/CMakeFiles 1
-Building C object CMakeFiles/cmTryCompileExec3846683181.dir/CheckSymbolExists.c.o
-/usr/bin/cc    -o CMakeFiles/cmTryCompileExec3846683181.dir/CheckSymbolExists.c.o   -c /home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTryCompileExec3846683181
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3846683181.dir/link.txt --verbose=1
-/usr/bin/cc       CMakeFiles/cmTryCompileExec3846683181.dir/CheckSymbolExists.c.o  -o cmTryCompileExec3846683181 -rdynamic 
-CMakeFiles/cmTryCompileExec3846683181.dir/CheckSymbolExists.c.o: In function `main':
+Building C object CMakeFiles/cmTryCompileExec972242273.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec972242273.dir/CheckSymbolExists.c.o   -c /home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTryCompileExec972242273
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec972242273.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec972242273.dir/CheckSymbolExists.c.o  -o cmTryCompileExec972242273 -rdynamic 
+CMakeFiles/cmTryCompileExec972242273.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x16): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
-make[1]: *** [cmTryCompileExec3846683181] Error 1
 make[1]: Leaving directory `/home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp'
-make: *** [cmTryCompileExec3846683181/fast] Error 2
+make[1]: *** [cmTryCompileExec972242273] Error 1
+make: *** [cmTryCompileExec972242273/fast] Error 2
 
 File /home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
@@ -35,19 +35,19 @@ int main(int argc, char** argv)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp
 
-Run Build Command:/usr/bin/make "cmTryCompileExec3710710103/fast"
-/usr/bin/make -f CMakeFiles/cmTryCompileExec3710710103.dir/build.make CMakeFiles/cmTryCompileExec3710710103.dir/build
+Run Build Command:/usr/bin/make "cmTryCompileExec4269337892/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec4269337892.dir/build.make CMakeFiles/cmTryCompileExec4269337892.dir/build
 make[1]: Entering directory `/home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp'
 /usr/bin/cmake -E cmake_progress_report /home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp/CMakeFiles 1
-Building C object CMakeFiles/cmTryCompileExec3710710103.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec3710710103.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-2.8/Modules/CheckFunctionExists.c
-Linking C executable cmTryCompileExec3710710103
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3710710103.dir/link.txt --verbose=1
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec3710710103.dir/CheckFunctionExists.c.o  -o cmTryCompileExec3710710103 -rdynamic -lpthreads 
+Building C object CMakeFiles/cmTryCompileExec4269337892.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec4269337892.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-2.8/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec4269337892
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec4269337892.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec4269337892.dir/CheckFunctionExists.c.o  -o cmTryCompileExec4269337892 -rdynamic -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
+make[1]: *** [cmTryCompileExec4269337892] Error 1
 make[1]: Leaving directory `/home/steven/rover_workspace/build/gazebo_plugins/CMakeFiles/CMakeTmp'
-make[1]: *** [cmTryCompileExec3710710103] Error 1
-make: *** [cmTryCompileExec3710710103/fast] Error 2
+make: *** [cmTryCompileExec4269337892/fast] Error 2
 
 

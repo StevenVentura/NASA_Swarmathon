@@ -41,7 +41,7 @@ return;
 
 void DropOffController::reset() {
 setState(DropOffController::FINDING_BASE);
-
+numTimesPausedAndTurned = 0;
 
 }
 

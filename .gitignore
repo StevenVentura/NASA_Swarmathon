@@ -1,0 +1,12 @@
+nohup.out
+*.cpp~
+*.h~
+*/nohup.out
+*/*/nohup.out
+*/*/*/nohup.out
+*/*/*/*/nohup.out
+*/*/*/*/*/nohup.out
+logs
+build
+devel
+
