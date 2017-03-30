@@ -1,8 +1,0 @@
-prefix=/home/steven/rover_workspace/install
-
-Name: obstacle_detection
-Description: Description of obstacle_detection
-Version: 0.2.0
-Cflags: 
-Libs: -L/home/steven/rover_workspace/install/lib 
-Requires: geometry_msgs roscpp sensor_msgs std_msgs message_filters

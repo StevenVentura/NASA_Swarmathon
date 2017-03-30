@@ -1,8 +1,0 @@
-prefix=/home/steven/rover_workspace/devel
-
-Name: gazebo_plugins
-Description: Description of gazebo_plugins
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/steven/rover_workspace/devel/lib 
-Requires: roscpp gazebo_ros
