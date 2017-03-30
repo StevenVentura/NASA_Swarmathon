@@ -596,6 +596,16 @@ float currentDistanceFromStart = hypot(startingLocation.x - currentLocation.x, s
 return (currentDistanceFromStart / distanceFromStartToFinish) >= percentageTravelCounter;
 }
 
+//only use this if you are using it on everything. it is for making angles comparable.
+float fixAngle(float myAngle)
+{
+float twopi = 2*3.1415926535;
+while(myAngle < 0)
+	myAngle = myAngle + twopi;
+while (myAngle > twopi)
+	myAngle = myAngle - twopi;
+}
+
 void doFreeMovementStuff()
 {
 float rotateOnlyAngleTolerance = 0.10;
@@ -660,6 +670,7 @@ setDestination(goalLocation.x,goalLocation.y);
 }
 else //if close enough to the destination
 {
+searchController.omniTimerStartingTime = ros::Time::now();
 searchController.setState(SearchController::REACHED_GOAL_PAUSE);
 }//end else distance>1
 
@@ -678,13 +689,38 @@ duration = 1.00;
 searchController.timeDifferenceObject = ros::Time::now() - searchController.omniTimerStartingTime;
 if ((searchController.timeDifferenceObject.sec + searchController.timeDifferenceObject.nsec/1000000000.0) < duration)
 {
-//do nothing
-
+//do nothing. turn a bit
+sendDriveCommand(0,0);
 }
 else
 {
+searchController.setState(SearchController::TAKING_A_LOOK);
+//for spinning in a circle
+searchController.accumulatedAngle = 0;
+searchController.lastAngle = currentLocation.theta;
+}
+
+break;
+
+case (SearchController::TAKING_A_LOOK):
+//turn 360 degrees and walk away :^)
+
+if (searchController.accumulatedAngle > 2*3.1415926535)
+{
+sendDriveCommand(0,0);
 searchController.setState(SearchController::REACHED_GOAL);
 }
+else
+{
+//keep spinning
+sendDriveCommand(0.05,0.35);
+searchController.accumulatedAngle += fabs(currentLocation.theta - searchController.lastAngle);
+searchController.lastAngle = currentLocation.theta;
+print(searchController.accumulatedAngle);
+}
+
+
+
 
 break;
 
@@ -840,7 +876,6 @@ initializeStuff();
 initRun = false;
 return;
 }
-print(calibrator.pickupSpeed);
 stateMachineMsg.data = "TRANSFORMING";
 
       

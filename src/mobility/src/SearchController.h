@@ -15,7 +15,7 @@ class SearchController {
     SearchController();
 
 //NAVI refers to the sub-statemachine used for controlling the searchController && 
-const static int SETTING_INITIAL_HEADING = 0, WAITING_FOR_MOMENTUM_BEFORE_MOVING = 1, MOVING_TO_GOAL = 2, REACHED_GOAL = 3, REACHED_GOAL_PAUSE=4;
+const static int SETTING_INITIAL_HEADING = 0, WAITING_FOR_MOMENTUM_BEFORE_MOVING = 1, MOVING_TO_GOAL = 2, REACHED_GOAL = 3, REACHED_GOAL_PAUSE=4, TAKING_A_LOOK=5;
 
 
 ros::Duration timeDifferenceObject;
@@ -23,12 +23,15 @@ ros::Time omniTimerStartingTime;
 int state;
 
 std::string getStateName() {
-const std::string stateNames[] = {"SETTING_INITIAL_HEADING", "WAITING_FOR_MOMENTUM", "MOVING_TO_GOAL","REACHED_GOAL","REACHED_GOAL_PAUSE"};
+const std::string stateNames[] = {"SETTING_INITIAL_HEADING", "WAITING_FOR_MOMENTUM", "MOVING_TO_GOAL","REACHED_GOAL","REACHED_GOAL_PAUSE","TAKING_A_LOOK"};
 return stateNames[getState()];
 }
 
 int getState(){return state;}
 void setState(int s){state=s;}
+
+geometry_msgs::Pose2D clusterLocation;
+float lastAngle, accumulatedAngle;
 
 
     // performs search pattern
