@@ -1,9 +1,0 @@
-[35m[1mScanning dependencies of target obstacle
-[0m[100%] [32mBuilding CXX object CMakeFiles/obstacle.dir/src/obstacle.cpp.o
-/home/steven/rover_workspace/src/obstacle_detection/src/obstacle.cpp: In function ‘void sonarHandler(const ConstPtr&, const ConstPtr&, const ConstPtr&)’:
-/home/steven/rover_workspace/src/obstacle_detection/src/obstacle.cpp:80:38: error: ‘timerStartingTime’ was not declared in this scope
- ros::Duration timeDifference = now - timerStartingTime[i];
-                                      ^
-make[2]: *** [CMakeFiles/obstacle.dir/src/obstacle.cpp.o] Error 1
-make[1]: *** [CMakeFiles/obstacle.dir/all] Error 2
-make: *** [all] Error 2

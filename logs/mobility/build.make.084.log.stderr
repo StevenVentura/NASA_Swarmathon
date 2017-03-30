@@ -1,7 +1,0 @@
-/home/steven/rover_workspace/src/mobility/src/mobility.cpp: In function ‘void doPickupControllerMovements()’:
-/home/steven/rover_workspace/src/mobility/src/mobility.cpp:393:6: error: ‘pickUpControllerr’ was not declared in this scope
-  if (pickUpControllerr.getState() == pickUpController.FIXING_CAMERA)
-      ^
-make[2]: *** [CMakeFiles/mobility.dir/src/mobility.cpp.o] Error 1
-make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
-make: *** [all] Error 2

@@ -1,7 +1,0 @@
-/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp: In member function ‘PickUpResult PickUpController::pickUpSelectedTarget(geometry_msgs::Pose2D)’:
-/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:105:8: error: ‘checkedGood’ was not declared in this scope
-    if (checkedGood == true)
-        ^
-make[2]: *** [CMakeFiles/mobility.dir/src/PickUpController.cpp.o] Error 1
-make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
-make: *** [all] Error 2

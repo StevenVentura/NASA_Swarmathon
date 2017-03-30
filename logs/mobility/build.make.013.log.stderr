@@ -1,8 +1,0 @@
-/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp: In member function ‘PickUpResult PickUpController::pickUpSelectedTarget(geometry_msgs::Pose2D)’:
-/home/steven/rover_workspace/src/mobility/src/PickUpController.cpp:104:29: error: expected primary-expression before ‘.’ token
-    setState(PickUpController.APPROACHING_CUBE);
-                             ^
-make[2]: *** [CMakeFiles/mobility.dir/src/PickUpController.cpp.o] Error 1
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
-make: *** [all] Error 2

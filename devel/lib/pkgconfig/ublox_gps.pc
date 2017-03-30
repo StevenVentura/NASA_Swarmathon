@@ -1,8 +1,0 @@
-prefix=/home/steven/rover_workspace/devel
-
-Name: ublox_gps
-Description: Description of ublox_gps
-Version: 0.0.4
-Cflags: -I/home/steven/rover_workspace/src/ublox/ublox_gps/include
-Libs: -L/home/steven/rover_workspace/devel/lib -lublox_gps
-Requires: roscpp ublox_msgs ublox_serialization
