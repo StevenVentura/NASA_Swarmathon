@@ -1,5 +1,3 @@
-#include <ros/ros.h>
-
 // ROS libraries
 #include <angles/angles.h>
 #include <random_numbers/random_numbers.h>
@@ -266,15 +264,13 @@ fingerAngle.data = 0; wristAngle.data = 0;
 void initializeStuff()
 {
 resetClaw();
-
-
 searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 
 //the origin is supposed to be like 50cm in front of him
 origin.x = currentLocation.x + 0.50 * cos(currentLocation.theta);
 origin.y = currentLocation.y + 0.50 * sin(currentLocation.theta);
-
 setDestination(origin.x,origin.y);
+
 print("done initializing");
 }
 
@@ -364,7 +360,7 @@ return;
 
 PickUpResult result;
 
-                result = pickUpController.pickUpSelectedTarget(currentLocation);
+                result = pickUpController.pickUpSelectedTarget(currentLocation,calibrator);
 
 if (result.angleError != 0 && result.cmdVel == 0)
 	sendDriveCommand(0.05,-1*result.angleError);
@@ -719,10 +715,8 @@ void doCalibrationStuff()
 
 float duration;
 ros::Duration timeDifferenceObject;
-/*
-omniTimerStartingTime = ros::Time::now();
-if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
-*/
+
+
 switch (calibrator.getState()) {
 case (Calibration::STATE_INIT):
 sendDriveCommand(0,0);
@@ -757,6 +751,7 @@ else
 //save the coordinates and proceed
 calibrator.backupLocation.x = currentLocation.x;
 calibrator.backupLocation.y = currentLocation.y;
+calibrator.omniTimerStartingTime = ros::Time::now();
 calibrator.setState(Calibration::MOVING_FORWARD);
 }
 
@@ -824,13 +819,6 @@ continueInterruptedSearch();
 
 void mobilityStateMachine(const ros::TimerEvent&) {
 
-if (initRun && (currentMode == 2 || currentMode == 3) )
-{
-initializeStuff();
-initRun = false;
-return;
-}
-
     std_msgs::String stateMachineMsg;
     
     int returnToSearchDelay = 3;
@@ -844,6 +832,12 @@ return;
 
 if (giveControlToCalibration) {
 doCalibrationStuff();
+return;
+}
+else if (initRun)
+{
+initializeStuff();
+initRun = false;
 return;
 }
 print(calibrator.pickupSpeed);

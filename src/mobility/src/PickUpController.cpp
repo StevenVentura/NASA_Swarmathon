@@ -47,7 +47,7 @@ the pickupcontroller is responsible for providing instructions on how to move th
 
 
 
-PickUpResult PickUpController::pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation) {
+PickUpResult PickUpController::pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation, Calibration calibrator) {
 result.debug = 0;
 
 
@@ -139,8 +139,11 @@ break;
 */
 case (APPROACHING_CUBE):
 checkedOnce = false;
-timeToEnsureStraightening = 0.75;
-duration = 2.5 * (distanceToBlockUponFirstSight / 0.320) + timeToEnsureStraightening;
+//timeToEnsureStraightening = 0.75;
+//duration = 2.5 * (distanceToBlockUponFirstSight / 0.320) + timeToEnsureStraightening;
+
+duration = distanceToBlockUponFirstSight / calibrator.pickupSpeed;
+
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
 {

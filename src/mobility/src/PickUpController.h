@@ -4,6 +4,7 @@
 #include <apriltags_ros/AprilTagDetectionArray.h>
 #include <ros/ros.h>
 #include <geometry_msgs/Pose2D.h>
+#include "Calibration.h"
 
 struct PickUpResult {
   float cmdVel;
@@ -25,7 +26,7 @@ class PickUpController
 const static float PICKUP_VELOCITY = 0.10;
 
   PickUpResult selectTarget(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message);
-  PickUpResult pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation);
+  PickUpResult pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation, Calibration);
 
   float getDist() {return blockDist;}
   bool getLockTarget() {return lockTarget;}
