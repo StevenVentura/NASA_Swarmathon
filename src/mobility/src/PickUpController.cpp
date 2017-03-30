@@ -144,7 +144,7 @@ duration = 2.5 * (distanceToBlockUponFirstSight / 0.320) + timeToEnsureStraighte
 timeDifferenceObject = ros::Time::now() - omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
 {
-result.cmdVel = 0.10;//inch forward
+result.cmdVel = PICKUP_VELOCITY;//inch forward
 result.angleError = 0;
 }
 else

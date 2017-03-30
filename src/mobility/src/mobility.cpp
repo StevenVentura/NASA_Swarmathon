@@ -730,37 +730,78 @@ resetClaw();
 calibrator.omniTimerStartingTime = ros::Time::now();
 calibrator.setState(Calibration::BACKING_UP);
 break;
+
 case(Calibration::BACKING_UP):
-duration = 3.0;
+duration = Calibration::backupTime;
 timeDifferenceObject = ros::Time::now() - calibrator.omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration) {
-
-
-} else {
-
+//back up
+sendDriveCommand(-1 * PickUpController::PICKUP_VELOCITY,0);
+}
+else
+{
+sendDriveCommand(0,0);
 calibrator.setState(Calibration::WAITING_1);
-
+calibrator.omniTimerStartingTime = ros::Time::now();
 }//end else
-
 break;
 
 case (Calibration::WAITING_1):
-
+duration = 1.0;
+timeDifferenceObject = ros::Time::now() - calibrator.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration) {
+//do nothing. waiting for momentum to stop.
+}
+else
+{
+//save the coordinates and proceed
+calibrator.backupLocation.x = currentLocation.x;
+calibrator.backupLocation.y = currentLocation.y;
+calibrator.setState(Calibration::MOVING_FORWARD);
+}
 
 break;
 
 case (Calibration::MOVING_FORWARD):
-
+duration = Calibration::backupTime;
+timeDifferenceObject = ros::Time::now() - calibrator.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration) {
+sendDriveCommand(PickUpController::PICKUP_VELOCITY,0);
+}
+else
+{
+sendDriveCommand(0,0);
+calibrator.setState(Calibration::WAITING_2);
+calibrator.omniTimerStartingTime = ros::Time::now();
+}
 
 break;
 
 case (Calibration::WAITING_2):
+duration = 1.0;
+
+timeDifferenceObject = ros::Time::now() - calibrator.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration) {
+//do nothing. waiting for momentum to stop.
+}
+else
+{
+//save the coordinates.
+calibrator.frontLocation.x = currentLocation.x;
+calibrator.frontLocation.y = currentLocation.y;
+calibrator.setState(Calibration::DONE_CALIBRATING);
+}
+
 
 break;
 
 case (Calibration::DONE_CALIBRATING):
-
-
+{
+//meters per second
+calibrator.pickupSpeed = hypot(calibrator.frontLocation.x - calibrator.backupLocation.x, calibrator.frontLocation.y - calibrator.backupLocation.y) / Calibration::backupTime;
+calibrator.reset();
+giveControlToCalibration = false;
+}
 break;
 
 }//end switch
@@ -802,12 +843,10 @@ return;
     if (currentMode == 2 || currentMode == 3) {
 
 if (giveControlToCalibration) {
-
 doCalibrationStuff();
-
 return;
 }
-
+print(calibrator.pickupSpeed);
 stateMachineMsg.data = "TRANSFORMING";
 
       

@@ -1,6 +1,7 @@
 #ifndef CALIBRATION_H
 #define CALIBRATION_H
 #include <ros/ros.h>
+#include <geometry_msgs/Pose2D.h>
 
 
 class Calibration {
@@ -18,6 +19,13 @@ std::string getStateName() {
 const std::string stateNames[] = {"BACKING_UP", "WAITING_1", "MOVING_FORWARD", "WAITING_2", "DONE_CALIBRATING","STATE_INIT"};
 return stateNames[getState()];
 }
+
+geometry_msgs::Pose2D backupLocation;
+geometry_msgs::Pose2D frontLocation;
+
+float pickupSpeed;//meters per second
+
+const static float backupTime = 4.0;//seconds
 
 ros::Time omniTimerStartingTime;
 

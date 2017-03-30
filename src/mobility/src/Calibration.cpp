@@ -7,6 +7,7 @@ setState(STATE_INIT);
 }
 
 void Calibration::reset() {
+setState(STATE_INIT);
 
 
 }

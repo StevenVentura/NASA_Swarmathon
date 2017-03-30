@@ -22,6 +22,7 @@ class PickUpController
   bool blockBlock;
   PickUpController();
   ~PickUpController();
+const static float PICKUP_VELOCITY = 0.10;
 
   PickUpResult selectTarget(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message);
   PickUpResult pickUpSelectedTarget(geometry_msgs::Pose2D currentLocation);
