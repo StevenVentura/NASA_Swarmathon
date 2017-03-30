@@ -94,6 +94,7 @@ volatile bool initRun = true;
 volatile bool headedToBaseOverwriteAll = false;
 volatile bool giveControlToDropOffController = false;
 volatile bool giveControlToPickupController = false;
+volatile bool giveControlToCalibration = true;
 
 
 // used to remember place in mapAverage array
@@ -712,6 +713,61 @@ break;
 
 
 }//end doFreeMovementStuff
+
+void doCalibrationStuff()
+{
+
+float duration;
+ros::Duration timeDifferenceObject;
+/*
+omniTimerStartingTime = ros::Time::now();
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
+*/
+switch (calibrator.getState()) {
+case (Calibration::STATE_INIT):
+sendDriveCommand(0,0);
+resetClaw();
+calibrator.omniTimerStartingTime = ros::Time::now();
+calibrator.setState(Calibration::BACKING_UP);
+break;
+case(Calibration::BACKING_UP):
+duration = 3.0;
+timeDifferenceObject = ros::Time::now() - calibrator.omniTimerStartingTime;
+if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration) {
+
+
+} else {
+
+calibrator.setState(Calibration::WAITING_1);
+
+}//end else
+
+break;
+
+case (Calibration::WAITING_1):
+
+
+break;
+
+case (Calibration::MOVING_FORWARD):
+
+
+break;
+
+case (Calibration::WAITING_2):
+
+break;
+
+case (Calibration::DONE_CALIBRATING):
+
+
+break;
+
+}//end switch
+
+}//end doCalibrationStuff()
+
+
 void doDriveOnTimerStuff()
 {
 
@@ -744,6 +800,13 @@ return;
 
     // Robot is in automode
     if (currentMode == 2 || currentMode == 3) {
+
+if (giveControlToCalibration) {
+
+doCalibrationStuff();
+
+return;
+}
 
 stateMachineMsg.data = "TRANSFORMING";
 
