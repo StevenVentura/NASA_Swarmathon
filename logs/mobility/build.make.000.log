@@ -1,0 +1,67 @@
+[35m[1mScanning dependencies of target tf2_msgs_generate_messages_cpp
+[0m[  0%] Built target tf2_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target roscpp_generate_messages_cpp
+[0m[  0%] Built target roscpp_generate_messages_cpp
+[35m[1mScanning dependencies of target tf_generate_messages_lisp
+[0m[  0%] Built target tf_generate_messages_lisp
+[35m[1mScanning dependencies of target geometry_msgs_generate_messages_lisp
+[0m[  0%] Built target geometry_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target roscpp_generate_messages_py
+[0m[  0%] Built target roscpp_generate_messages_py
+[35m[1mScanning dependencies of target geometry_msgs_generate_messages_cpp
+[0m[  0%] Built target geometry_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target roscpp_generate_messages_lisp
+[0m[  0%] Built target roscpp_generate_messages_lisp
+[35m[1mScanning dependencies of target geometry_msgs_generate_messages_py
+[0m[  0%] Built target geometry_msgs_generate_messages_py
+[35m[1mScanning dependencies of target sensor_msgs_generate_messages_py
+[0m[  0%] Built target sensor_msgs_generate_messages_py
+[35m[1mScanning dependencies of target sensor_msgs_generate_messages_lisp
+[0m[  0%] Built target sensor_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target tf_generate_messages_py
+[0m[  0%] Built target tf_generate_messages_py
+[35m[1mScanning dependencies of target rosgraph_msgs_generate_messages_py
+[0m[  0%] Built target rosgraph_msgs_generate_messages_py
+[35m[1mScanning dependencies of target rosgraph_msgs_generate_messages_lisp
+[0m[  0%] Built target rosgraph_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target actionlib_generate_messages_cpp
+[0m[  0%] Built target actionlib_generate_messages_cpp
+[35m[1mScanning dependencies of target tf_generate_messages_cpp
+[0m[  0%] Built target tf_generate_messages_cpp
+[35m[1mScanning dependencies of target std_msgs_generate_messages_lisp
+[0m[  0%] Built target std_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target actionlib_generate_messages_py
+[0m[  0%] Built target actionlib_generate_messages_py
+[35m[1mScanning dependencies of target tf2_msgs_generate_messages_py
+[0m[  0%] Built target tf2_msgs_generate_messages_py
+[35m[1mScanning dependencies of target actionlib_msgs_generate_messages_cpp
+[0m[  0%] Built target actionlib_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target tf2_msgs_generate_messages_lisp
+[0m[  0%] Built target tf2_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target actionlib_msgs_generate_messages_lisp
+[0m[  0%] Built target actionlib_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target actionlib_msgs_generate_messages_py
+[0m[  0%] Built target actionlib_msgs_generate_messages_py
+[35m[1mScanning dependencies of target std_msgs_generate_messages_py
+[0m[  0%] Built target std_msgs_generate_messages_py
+[35m[1mScanning dependencies of target std_msgs_generate_messages_cpp
+[0m[  0%] Built target std_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target actionlib_generate_messages_lisp
+[0m[  0%] Built target actionlib_generate_messages_lisp
+[35m[1mScanning dependencies of target sensor_msgs_generate_messages_cpp
+[0m[  0%] Built target sensor_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target rosgraph_msgs_generate_messages_cpp
+[0m[  0%] Built target rosgraph_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target mobility
+[0m[ 25%] [32mBuilding CXX object CMakeFiles/mobility.dir/src/PickUpController.cpp.o
+[0m[ 50%] [32mBuilding CXX object CMakeFiles/mobility.dir/src/DropOffController.cpp.o
+[0m[ 75%] [32mBuilding CXX object CMakeFiles/mobility.dir/src/SearchController.cpp.o
+[0m[100%] [32mBuilding CXX object CMakeFiles/mobility.dir/src/mobility.cpp.o
+[0m[31m[1mLinking CXX executable /home/steven/rover_workspace/devel/lib/mobility/mobility
+CMakeFiles/mobility.dir/src/mobility.cpp.o: In function `__static_initialization_and_destruction_0(int, int)':
+mobility.cpp:(.text+0x4065): undefined reference to `Calibration::Calibration()'
+mobility.cpp:(.text+0x4074): undefined reference to `Calibration::~Calibration()'
+collect2: error: ld returned 1 exit status
+make[2]: *** [/home/steven/rover_workspace/devel/lib/mobility/mobility] Error 1
+make[1]: *** [CMakeFiles/mobility.dir/all] Error 2
+make: *** [all] Error 2

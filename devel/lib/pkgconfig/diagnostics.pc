@@ -1,0 +1,8 @@
+prefix=/home/steven/rover_workspace/devel
+
+Name: diagnostics
+Description: Description of diagnostics
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/steven/rover_workspace/devel/lib 
+Requires: roscpp std_msgs gazebo_ros

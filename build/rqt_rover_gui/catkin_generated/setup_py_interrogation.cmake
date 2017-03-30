@@ -1,0 +1,6 @@
+set(rqt_rover_gui_SETUP_PY_VERSION "0.0.1")
+set(rqt_rover_gui_SETUP_PY_SCRIPTS "")
+set(rqt_rover_gui_SETUP_PY_PACKAGES "rqt_rover_gui")
+set(rqt_rover_gui_SETUP_PY_PACKAGE_DIRS "src/rqt_rover_gui")
+set(rqt_rover_gui_SETUP_PY_MODULES "")
+set(rqt_rover_gui_SETUP_PY_MODULE_DIRS "")

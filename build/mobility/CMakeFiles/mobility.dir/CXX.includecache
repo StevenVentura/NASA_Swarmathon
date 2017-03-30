@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/steven/rover_workspace/src/mobility/src/Calibration.cpp
+Calibration.h
+/home/steven/rover_workspace/src/mobility/src/Calibration.h
+
+/home/steven/rover_workspace/src/mobility/src/Calibration.h
+

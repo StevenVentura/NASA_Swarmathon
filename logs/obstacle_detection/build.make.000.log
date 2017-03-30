@@ -1,0 +1,4 @@
+[35m[1mScanning dependencies of target obstacle
+[0m[100%] [32mBuilding CXX object CMakeFiles/obstacle.dir/src/obstacle.cpp.o
+[0m[31m[1mLinking CXX executable /home/steven/rover_workspace/devel/lib/obstacle_detection/obstacle
+[0m[100%] Built target obstacle

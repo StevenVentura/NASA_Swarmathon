@@ -1,0 +1,6 @@
+devel_space: /home/steven/rover_workspace/devel
+install: false
+install_space: /home/steven/rover_workspace/install
+profile: default
+source_space: /home/steven/rover_workspace/src
+workspace: /home/steven/rover_workspace

@@ -1,0 +1,8 @@
+prefix=/home/steven/rover_workspace/install
+
+Name: mobility
+Description: Description of mobility
+Version: 0.2.0
+Cflags: 
+Libs: -L/home/steven/rover_workspace/install/lib 
+Requires: geometry_msgs roscpp sensor_msgs std_msgs random_numbers tf
