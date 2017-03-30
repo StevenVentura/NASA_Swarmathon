@@ -22,6 +22,7 @@
 #include "PickUpController.h"
 #include "DropOffController.h"
 #include "SearchController.h"
+#include "Calibration.h"
 
 // To handle shutdown signals so the node quits
 // properly in response to "rosnode kill"
@@ -37,6 +38,7 @@ random_numbers::RandomNumberGenerator* rng;
 PickUpController pickUpController;
 DropOffController dropOffController;
 SearchController searchController;
+Calibration calibrator;
 
 // Mobility Logic Functions
 void sendDriveCommand(double linearVel, double angularVel);

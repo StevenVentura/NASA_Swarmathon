@@ -1,5 +1,5 @@
-#ifndef DROPOFCONTROLLER_H
-#define DROPOFCONTROLLER_H
+#ifndef DROPOFFCONTROLLER_H
+#define DROPOFFCONTROLLER_H
 #define HEADERFILE_H
 
 #include <geometry_msgs/Pose2D.h>
