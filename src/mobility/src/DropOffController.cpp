@@ -19,6 +19,7 @@ overall goals:
 
 DropOffController::DropOffController() {
 	countLeft = 0; countRight = 0;
+	//test lol
 }
 
 void DropOffController::setTagCountToZeroIfAppropriate()
