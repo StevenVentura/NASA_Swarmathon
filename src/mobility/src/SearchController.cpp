@@ -25,8 +25,8 @@ return goalLocation;
 float newAngle = rng->gaussian(currentLocation.theta, 0.50);
 
 //select new position!
-goalLocation.x = currentLocation.x + 0.70 * cos(newAngle);
-goalLocation.y = currentLocation.y + 0.70 * sin(newAngle);
+goalLocation.x = currentLocation.x + 1.00 * cos(newAngle);
+goalLocation.y = currentLocation.y + 1.00 * sin(newAngle);
 
 
 

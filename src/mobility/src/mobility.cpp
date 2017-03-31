@@ -63,7 +63,7 @@ geometry_msgs::Pose2D currentLocationAverage;
 const float FINGERS_OPEN = M_PI_2;
 const float FINGERS_CLOSED = 0;
 const float WRIST_UP = 0;
-const float WRIST_DOWN = 1.25;
+//const float WRIST_DOWN = 1.25;
 
 
 //NAVIGATION VARIABLES
@@ -267,8 +267,8 @@ resetClaw();
 searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 
 //the origin is supposed to be like 50cm in front of him
-origin.x = currentLocation.x + 0.50 * cos(currentLocation.theta);
-origin.y = currentLocation.y + 0.50 * sin(currentLocation.theta);
+origin.x = currentLocation.x + (0.50+0.25) * cos(currentLocation.theta);
+origin.y = currentLocation.y + (0.50+0.25) * sin(currentLocation.theta);
 setDestination(origin.x,origin.y);
 
 print("done initializing");
@@ -362,10 +362,15 @@ PickUpResult result;
 
                 result = pickUpController.pickUpSelectedTarget(currentLocation,calibrator);
 
+//if (result.cmdVel != pickUpController.lastCmdVel && result.angleError != pickUpController.lastAngleError)
+{
 if (result.angleError != 0 && result.cmdVel == 0)
-	sendDriveCommand(0.05,-1*result.angleError);
+	sendDriveCommand(0.00,-1*result.angleError);
 else
 	sendDriveCommand(result.cmdVel,-1*result.angleError);
+}//end it changed
+pickUpController.lastCmdVel = result.cmdVel;
+pickUpController.lastAngleError = result.angleError;
 
                 std_msgs::Float32 fingerAngle;
 		std_msgs::Float32 wristAngle;
@@ -442,7 +447,7 @@ break;
 
 case (DropOffController::SCOOTING_CLOSER_TO_BASE):
 //radiusTho = 0;
-duration = 0.50 - 0.50;
+duration = 0.00;
 timeDifferenceObject = ros::Time::now() - dropOffController.omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration)
 {
@@ -616,7 +621,7 @@ stringstream ss;
 float duration;//for use in switch
 float currentDistanceFromBase;
 
-
+print(searchController.getStateName());
 
 
 switch (searchController.getState()) {
@@ -713,8 +718,9 @@ searchController.setState(SearchController::REACHED_GOAL);
 else
 {
 //keep spinning
-sendDriveCommand(0.05,0.35);
+sendDriveCommand(0.05,0.45);//needs to be able to actually see it
 searchController.accumulatedAngle += fabs(currentLocation.theta - searchController.lastAngle);
+print(searchController.accumulatedAngle);
 searchController.lastAngle = currentLocation.theta;
 }
 
@@ -865,14 +871,16 @@ void mobilityStateMachine(const ros::TimerEvent&) {
     // Robot is in automode
     if (currentMode == 2 || currentMode == 3) {
 
-if (giveControlToCalibration) {
-doCalibrationStuff();
-return;
-}
-else if (initRun)
+if (initRun)
 {
 initializeStuff();
 initRun = false;
+return;
+}
+
+
+if (giveControlToCalibration) {
+doCalibrationStuff();
 return;
 }
 stateMachineMsg.data = "TRANSFORMING";

@@ -21,6 +21,8 @@ blockBlock = false;
 openCVThinksCubeIsHeld = false;
 result.foundACluster = false;
 
+lastCmdVel = -0.3141719;//unique number in range of motors
+lastAngleError = lastCmdVel;
 }
 
 /*
@@ -241,7 +243,6 @@ break;
 
 }//end switch(state)
 
-
 return result;
 }//
 
@@ -290,7 +291,7 @@ if (message->detections.size() > 1)
 
     geometry_msgs::PoseStamped tagPose = message->detections[target].pose;
 
-if (hypot(hypot(tagPose.pose.position.x, tagPose.pose.position.y), tagPose.pose.position.z) < 0.13) {
+if (hypot(hypot(tagPose.pose.position.x, tagPose.pose.position.y), tagPose.pose.position.z) < 0.15) {
 //there is areally close block so exit the program
 openCVThinksCubeIsHeld = true;
     }
@@ -308,6 +309,9 @@ void PickUpController::reset() {
     result.pickedUp = false;
 checkedOnce = false;
 state = FIXING_CAMERA;
+
+lastCmdVel = -0.3141719;//unique number in range of motors
+lastAngleError = lastCmdVel;
 
     nTargetsSeen = 0;
     blockYawError = 0;

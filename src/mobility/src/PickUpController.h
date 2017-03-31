@@ -31,8 +31,8 @@ const static float PICKUP_VELOCITY = 0.10;
 
   float getDist() {return blockDist;}
   bool getLockTarget() {return lockTarget;}
-  float getTD() {return td;}
-void setDistanceToBlockUponFirstSight(float pls,float ok) {distanceToBlockUponFirstSight = pls; yawErrorToBlockUponFirstSight = ok;}
+  float getTD() {return td;}//									the gripper length is 13 centimeters
+void setDistanceToBlockUponFirstSight(float pls,float ok) {distanceToBlockUponFirstSight = pls - 0.00; yawErrorToBlockUponFirstSight = ok;}
 
 int getState() {return state;}
 void setState(int s){state = s;}
@@ -55,7 +55,7 @@ return stateNames[getState()];
 const static float FINGERS_OPEN = M_PI_2;
 const static float FINGERS_CLOSED = 0;
 const static float WRIST_UP = 0;
-const static float WRIST_DOWN = 1.25;
+const static float WRIST_DOWN = 1.00;
 const static float WRIST_CARRY = 0.80;
 
 //this is set when you first switch to "state_pickup"
@@ -64,6 +64,10 @@ float yawErrorToBlockUponFirstSight;
 //yeah
 float correctAngleBearingToPickUpCube;
 
+
+//ok wheels please
+float lastCmdVel;
+float lastAngleError;
 
 
 ros::Time omniTimerStartingTime;
