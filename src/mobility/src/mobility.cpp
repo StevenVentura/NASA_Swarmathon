@@ -194,12 +194,12 @@ int main(int argc, char **argv) {
     // Register the SIGINT event handler so the node can shutdown properly
     signal(SIGINT, sigintEventHandler);
 
-    joySubscriber = mNH.subscribe((publishedName + "/joystick"), 10, joyCmdHandler);
+    joySubscriber = mNH.subscribe((publishedName + "/joystick"), 100, joyCmdHandler);
     modeSubscriber = mNH.subscribe((publishedName + "/mode"), 1, modeHandler);
-    targetSubscriber = mNH.subscribe((publishedName + "/targets"), 10, targetHandler);
-    obstacleSubscriber = mNH.subscribe((publishedName + "/obstacle"), 10, obstacleHandler);
-    odometrySubscriber = mNH.subscribe((publishedName + "/odom/filtered"), 10, odometryHandler);
-    mapSubscriber = mNH.subscribe((publishedName + "/odom/ekf"), 10, mapHandler);
+    targetSubscriber = mNH.subscribe((publishedName + "/targets"), 100, targetHandler);
+    obstacleSubscriber = mNH.subscribe((publishedName + "/obstacle"), 100, obstacleHandler);
+    odometrySubscriber = mNH.subscribe((publishedName + "/odom/filtered"), 100, odometryHandler);
+    mapSubscriber = mNH.subscribe((publishedName + "/odom/ekf"), 100, mapHandler);
 
     status_publisher = mNH.advertise<std_msgs::String>((publishedName + "/status"), 1, true);
     stateMachinePublish = mNH.advertise<std_msgs::String>((publishedName + "/state_machine"), 1, true);
@@ -269,6 +269,8 @@ searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 //the origin is supposed to be like 50cm in front of him
 origin.x = currentLocation.x + (0.50+0.25) * cos(currentLocation.theta);
 origin.y = currentLocation.y + (0.50+0.25) * sin(currentLocation.theta);
+
+
 setDestination(origin.x,origin.y);
 
 print("done initializing");
@@ -720,7 +722,6 @@ else
 //keep spinning
 sendDriveCommand(0.05,0.45);//needs to be able to actually see it
 searchController.accumulatedAngle += fabs(currentLocation.theta - searchController.lastAngle);
-print(searchController.accumulatedAngle);
 searchController.lastAngle = currentLocation.theta;
 }
 
@@ -877,6 +878,7 @@ initializeStuff();
 initRun = false;
 return;
 }
+
 
 
 if (giveControlToCalibration) {
@@ -1075,7 +1077,6 @@ if (!giveControlToPickupController)
 {
 if (result.foundACluster == true)
 {
-print("FOUND A CLUSTER XD XD XD XD XD XD XD XD XD XD XD XD XD ");
 searchController.comeBackToCluster = true;
 searchController.clusterLocation.x = currentLocation.x + 0.5*cos(currentLocation.theta);
 searchController.clusterLocation.y = currentLocation.y + 0.5*sin(currentLocation.theta);
@@ -1199,6 +1200,7 @@ void mapHandler(const nav_msgs::Odometry::ConstPtr& message) {
 }
 
 void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message) {
+
     if (currentMode == 0 || currentMode == 1) {
         sendDriveCommand(abs(message->axes[4]) >= 0.1 ? message->axes[4] : 0, abs(message->axes[3]) >= 0.1 ? message->axes[3] : 0);
     }
