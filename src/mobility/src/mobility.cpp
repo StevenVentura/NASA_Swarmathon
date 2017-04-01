@@ -65,6 +65,9 @@ const float FINGERS_CLOSED = 0;
 const float WRIST_UP = 0;
 //const float WRIST_DOWN = 1.25;
 
+bool debug_cheatStartWithCube = false;
+bool debug_cheatSkipCalibration = false;
+
 
 //NAVIGATION VARIABLES
 geometry_msgs::Pose2D goalLocation;//the location of the next place he is told to go to
@@ -93,6 +96,7 @@ volatile bool headedToBaseOverwriteAll = false;
 volatile bool giveControlToDropOffController = false;
 volatile bool giveControlToPickupController = false;
 volatile bool giveControlToCalibration = true;
+volatile bool tryToFindTheBase = false;
 
 
 // used to remember place in mapAverage array
@@ -205,7 +209,7 @@ int main(int argc, char **argv) {
     stateMachinePublish = mNH.advertise<std_msgs::String>((publishedName + "/state_machine"), 1, true);
     fingerAnglePublish = mNH.advertise<std_msgs::Float32>((publishedName + "/fingerAngle/cmd"), 1, true);
     wristAnglePublish = mNH.advertise<std_msgs::Float32>((publishedName + "/wristAngle/cmd"), 1, true);
-    infoLogPublisher = mNH.advertise<std_msgs::String>("/infoLog", 1, true);
+    infoLogPublisher = mNH.advertise<std_msgs::String>("/infoLog", 10, true);
     driveControlPublish = mNH.advertise<geometry_msgs::Twist>((publishedName + "/driveControl"), 10);
 
     publish_status_timer = mNH.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
@@ -261,8 +265,29 @@ fingerAngle.data = 0; wristAngle.data = 0;
 
 }
 
+//debugging state changing cheats xd d 
+void doCheat()
+{
+
+if (debug_cheatStartWithCube)
+{
+headedToBaseOverwriteAll = true;
+setDestination(origin.x, origin.y);
+giveControlToPickupController = false;
+std_msgs::Float32 fingerAngle,wristAngle;
+wristAngle.data = 0.80;
+wristAnglePublish.publish(wristAngle);
+}
+if (debug_cheatSkipCalibration)
+{
+
+giveControlToCalibration = false;
+}
+
+}
 void initializeStuff()
 {
+doCheat();
 resetClaw();
 searchController.setState(SearchController::SETTING_INITIAL_HEADING);
 
@@ -281,7 +306,7 @@ print("done initializing");
 //steven code. used in pickupcontroller and sets the angle for you. cos thats how it should be done.
 void setDestination(float x, float y)
 {
-if (headedToBaseOverwriteAll)
+if (headedToBaseOverwriteAll && !tryToFindTheBase)
 {
 goalLocation.x = origin.x;
 goalLocation.y = origin.y;
@@ -623,8 +648,6 @@ stringstream ss;
 float duration;//for use in switch
 float currentDistanceFromBase;
 
-print(searchController.getStateName());
-
 
 switch (searchController.getState()) {
 //const static int SETTING_INITIAL_HEADING = 0, WAITING_FOR_MOMENTUM_BEFORE_MOVING = 1, MOVING_TO_GOAL = 2, REACHED_GOAL = 3, REACHED_GOAL_PAUSE=4;
@@ -707,6 +730,15 @@ searchController.accumulatedAngle = 0;
 searchController.lastAngle = currentLocation.theta;
 }
 
+//this is to make it try to find the base with random search.
+if (headedToBaseOverwriteAll && !tryToFindTheBase)
+{
+tryToFindTheBase = true;
+searchController.initTryingToFindBase(origin.x,origin.y);
+}
+
+
+
 break;
 
 case (SearchController::TAKING_A_LOOK):
@@ -768,7 +800,7 @@ calibrator.setState(Calibration::BACKING_UP);
 break;
 
 case(Calibration::BACKING_UP):
-duration = Calibration::backupTime;
+duration = Calibration::backupTime / 2 ;
 timeDifferenceObject = ros::Time::now() - calibrator.omniTimerStartingTime;
 if ((timeDifferenceObject.sec + timeDifferenceObject.nsec/1000000000.0) < duration) {
 //back up
@@ -862,7 +894,8 @@ continueInterruptedSearch();
 void mobilityStateMachine(const ros::TimerEvent&) {
 
     std_msgs::String stateMachineMsg;
-    
+
+
     int returnToSearchDelay = 3;
 
     // calls the averaging function, also responsible for
@@ -871,6 +904,9 @@ void mobilityStateMachine(const ros::TimerEvent&) {
 
     // Robot is in automode
     if (currentMode == 2 || currentMode == 3) {
+
+
+
 
 if (initRun)
 {
@@ -886,6 +922,7 @@ doCalibrationStuff();
 return;
 }
 stateMachineMsg.data = "TRANSFORMING";
+
 
       
 
@@ -976,13 +1013,12 @@ void continueInterruptedSearch()//for use when traveling across the field: eithe
 {
 
 //list all of the special cases in here. this is if the robot needs to remember the last path it was taking. otherwise just assign a new random path.
-if (headedToBaseOverwriteAll == true)
+if (headedToBaseOverwriteAll == true && tryToFindTheBase == false) 
 {
 setDestination(origin.x, origin.y);
 }
 else
 {
-print("collision found. changing route");
 geometry_msgs::Pose2D tempLocation = searchController.search(currentLocation);
 setDestination(tempLocation.x,tempLocation.y);
 }
@@ -995,6 +1031,8 @@ setDestination(tempLocation.x,tempLocation.y);
 
 void doHitTheBaseCode()
 {
+tryToFindTheBase = false;
+searchController.tryingToFindTheBase = tryToFindTheBase;
 //he just detected one of the base tags
 if (headedToBaseOverwriteAll) {
 headedToBaseOverwriteAll = false;

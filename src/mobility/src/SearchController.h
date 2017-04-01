@@ -30,10 +30,20 @@ return stateNames[getState()];
 int getState(){return state;}
 void setState(int s){state=s;}
 
+void initTryingToFindBase(float x,float y);
+
 geometry_msgs::Pose2D clusterLocation;
 bool comeBackToCluster;
 
 float lastAngle, accumulatedAngle;
+bool tryingToFindTheBase;
+
+float spiralLength;
+float spiralAngle;
+float originX;
+float originY;
+const static int numPoints = 3;
+int spiralCounter;
 
 
     // performs search pattern
